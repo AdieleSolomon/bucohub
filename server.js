@@ -8,9 +8,10 @@ import fs from "fs";
 import nodemailer from "nodemailer";
 import { Parser } from "@json2csv/plainjs";
 import PDFDocument from "pdfkit";
+require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // =============================
 // ENHANCED FILE UPLOAD CONFIGURATION
@@ -82,14 +83,15 @@ app.use('/uploads', express.static(uploadsDir, {
     maxAge: '1d', // Cache for 1 day
     etag: true
 }));
+app.use(express.static('public')); // Serve static files from 'public' directory
 
 // Database connection
 const db = createConnection({
-    host: "localhost",
-    user: "root",   
-    password: "",  
-    database: "bucohub",
-    port: 3306
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",   
+    password: process.env.DB_PASSWORD || "",  
+    database: process.env.DB_NAME || "bucohub",
+    port: process.env.DB_PORT || 3306
 });
 
 db.connect(err => {
@@ -233,6 +235,7 @@ function parseCourses(coursesData) {
 
 // Default route
 app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
     res.json({ 
         message: "BUCODel API is running",
         endpoints: {
