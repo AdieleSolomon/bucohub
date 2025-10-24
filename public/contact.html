@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - BUCODel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Montserrat:wght@400;500;600;700&display=swap');
+        
+        * { 
+            margin: 0;
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #1a0b2e 0%, #2d1b3d 100%);
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .page-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            background: #2d1b3d;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2d1b3d 0%, #1a0b2e 100%);
+            padding: 20px 30px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ffd700;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo { 
+            color: #ffd700; 
+            font-size: 32px; 
+            font-weight: 800; 
+            display: flex; 
+            align-items: center;
+            gap: 10px; 
+            font-family: 'Raleway', sans-serif;
+            letter-spacing: 1px;
+        }
+        
+        .gear { 
+            width: 24px;
+            height: 24px;
+            border: 3px solid #ffd700; 
+            border-radius: 50%; 
+            position: relative;
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gear::before { 
+            content: ''; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            width: 10px; 
+            height: 10px;
+            background: #ffd700; 
+            border-radius: 50%; 
+        }
+
+        .tagline { 
+            color: #b8a3c7; 
+            font-size: 14px; 
+            margin-top: 5px; 
+            letter-spacing: 3px; 
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .hero-section {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+        
+        .banner-image {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(45, 27, 61, 0.7), rgba(45, 27, 61, 0.9)), 
+                        url('https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-content {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            max-width: 800px;
+        }
+        
+        .hero-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero-subtitle {
+            font-size: 18px;
+            color: #e0d6eb;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .yellow-accent { 
+            height: 8px; 
+            background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+            margin: 0; 
+        }
+
+        .content { 
+            padding: 40px 30px; 
+            background: linear-gradient(135deg, #3d1a4f 0%, #2d1b3d 100%); 
+            width: 100%; 
+        }
+
+        .page-title {
+            color: #ffd700;
+            font-size: 36px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: #b8a3c7;
+            font-size: 18px;
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+
+        .contact-method {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-method::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .contact-method:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .contact-method:hover::before {
+            transform: scaleX(1);
+        }
+
+        .contact-method i {
+            font-size: 36px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-method h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .contact-method p {
+            color: #d0c5dd;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .contact-form {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group { 
+            margin-bottom: 25px; 
+        }
+
+        .form-group label { 
+            display: block; 
+            color: #ffd700; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            font-size: 15px; 
+        }
+
+        .form-group input, 
+        .form-group textarea { 
+            width: 100%; 
+            padding: 14px; 
+            border: 2px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 8px; 
+            background: rgba(255, 255, 255, 0.9); 
+            font-size: 15px; 
+            resize: vertical;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus { 
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+        }
+
+        .form-group textarea { 
+            height: 150px; 
+            min-height: 120px;
+        }
+
+        .form-buttons { 
+            display: flex; 
+            gap: 15px; 
+            justify-content: center; 
+            margin-top: 30px; 
+        }
+
+        .btn { 
+            padding: 14px 28px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, #ffd700, #ffed4e); 
+            color: #2d1b3d; 
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-primary:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-secondary { 
+            background: transparent; 
+            color: #b8a3c7; 
+            border: 2px solid #b8a3c7; 
+        }
+
+        .btn-secondary:hover { 
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .map-container {
+            margin-top: 40px;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 350px;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #b8a3c7;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .map-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(45, 27, 61, 0.7), rgba(61, 26, 79, 0.7));
+        }
+
+        .map-placeholder {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .map-placeholder i {
+            font-size: 50px;
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .map-placeholder h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .contact-info { 
+            background: rgba(0, 0, 0, 0.2); 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-top: 40px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-row { 
+            display: flex; 
+            justify-content: space-between; 
+            color: #b8a3c7; 
+            font-size: 14px; 
+            margin-bottom: 15px; 
+        }
+        
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .contact-row .phone-numbers { 
+            padding-right: 100px; 
+            border-right: 2px solid rgba(255, 255, 255, 0.2); 
+        }
+
+        .phone-numbers { 
+            font-weight: 600; 
+            color: white; 
+            font-size: 16px;
+        }
+
+        .address { 
+            font-size: 14px; 
+            line-height: 1.5; 
+        }
+        
+        .address-title {
+            color: #ffd700;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .website { 
+            background: linear-gradient(135deg, #ffd700, #ffed4e); 
+            color: #2d1b3d; 
+            text-align: center; 
+            padding: 12px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            margin-top: 20px; 
+            border-radius: 8px; 
+            letter-spacing: 0.5px;
+        }
+
+        /* Navigation Styles */
+        .three-line-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .three-line-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .three-line-btn .line {
+            width: 25px;
+            height: 3px;
+            background: #ffd700;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .side-panel {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(135deg, #3d1a4f 0%, #2d1b3d 100%);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: all 0.4s ease;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .side-panel.active {
+            right: 0;
+        }
+
+        .side-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .side-panel-title {
+            color: #ffd700;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .side-panel-close {
+            background: none;
+            border: none;
+            color: #b8a3c7;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .side-panel-close:hover {
+            color: #ffd700;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .side-panel-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .side-panel-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .side-panel-option:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(10px);
+        }
+
+        .side-panel-option i {
+            margin-right: 12px;
+            color: #ffd700;
+            width: 20px;
+            text-align: center;
+        }
+
+        .side-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .side-panel-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #3d1a4f 0%, #2d1b3d 100%);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateY(30px);
+            transition: transform 0.4s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2d1b3d 0%, #1a0b2e 100%);
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ffd700;
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #b8a3c7;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-btn:hover {
+            color: #ffd700;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .contact-methods {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .side-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .contact-row {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            .contact-row .phone-numbers {
+                padding-right: 0;
+                border-right: none;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+                padding-bottom: 20px;
+            }
+            
+            .contact-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .hero-title {
+                font-size: 32px;
+            }
+            
+            .page-title {
+                font-size: 30px;
+            }
+            
+            header {
+                padding: 15px 20px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .contact-form {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 26px;
+            }
+            
+            .page-title {
+                font-size: 26px;
+            }
+            
+            .hero-title {
+                font-size: 28px;
+            }
+            
+            .hero-subtitle {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">BUC<div class="gear"></div>Del</div>
+                <div class="tagline">TECHNOLOGICAL HUB</div>
+            </div>
+
+            <!-- Three-line button -->
+            <button class="three-line-btn" id="threeLineBtn" title="Toggle Menu">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </button>
+        </header>
+        
+        <div class="hero-section">
+            <div class="banner-image">
+                <div class="hero-content">
+                    <h1 class="hero-title">Contact Us</h1>
+                    <p class="hero-subtitle">Get in touch with our team - we're here to help you start your technology journey</p>
+                    <p class="page-subtitle">Reach out to us for any inquiries about our courses, admissions, or partnerships</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="yellow-accent"></div>
+        
+        <main class="content">
+            <div class="contact-methods">
+                <div class="contact-method">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Visit Our Campus</h3>
+                    <p>BUCODel Building<br>Behind Deeper Life Church<br>Tudun wada, Gusau State</p>
+                </div>
+                
+                <div class="contact-method">
+                    <i class="fas fa-phone"></i>
+                    <h3>Call Us Directly</h3>
+                    <p>08064530154<br>08058100008</p>
+                </div>
+                
+                <div class="contact-method">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Send Us an Email</h3>
+                    <p>info@bucodel.edu.ng<br>admissions@bucodel.edu.ng</p>
+                </div>
+                
+                <div class="contact-method">
+                    <i class="fas fa-clock"></i>
+                    <h3>Opening Hours</h3>
+                    <p>Monday - Friday: 8am - 6pm<br>Saturday: 9am - 2pm<br>Sunday: Closed</p>
+                </div>
+            </div>
+            
+            <div class="contact-form">
+                <h3 style="color: #ffd700; margin-bottom: 25px; font-size: 24px; text-align: center;">Send Us a Message</h3>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="contactName">Full Name *</label>
+                        <input type="text" id="contactName" name="name" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactEmail">Email Address *</label>
+                        <input type="email" id="contactEmail" name="email" required placeholder="Enter your email address">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactSubject">Subject</label>
+                        <input type="text" id="contactSubject" name="subject" placeholder="What is your message about?">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactMessage">Message *</label>
+                        <textarea id="contactMessage" name="message" required placeholder="How can we help you? Tell us more about your inquiry..."></textarea>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetContactForm()">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Interactive Map</h3>
+                    <p>Map integration coming soon</p>
+                    <p style="font-size: 14px; margin-top: 10px;">Visit our campus at the location shown above</p>
+                </div>
+            </div>
+            
+            <div class="contact-info">
+                <div class="contact-row">
+                    <div class="contact-item">
+                        <div class="phone-numbers">08064530154 <br> 08058100008</div>
+                        <div>Call our admissions team</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="address-title">Our Location</div>
+                        <div class="address">BUCODel Building,<br> Behind Deeper Life Church,<br> Tudun wada, Gusau State</div>
+                    </div>
+                </div>
+            </div>
+            <footer class="website">www.codel.babcock.edu.ng/techhub</footer>
+        </main>
+    </div>
+
+    <!-- Side panel overlay -->
+    <div class="side-panel-overlay" id="sidePanelOverlay"></div>
+
+    <!-- Side panel -->
+    <div class="side-panel" id="sidePanel">
+        <div class="side-panel-header">
+            <div class="side-panel-title">BUCODel Menu</div>
+            <button class="side-panel-close" id="sidePanelClose">&times;</button>
+        </div>
+        <div class="side-panel-content">
+            <a href="index.html" class="side-panel-option">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <button class="side-panel-option" onclick="openRegistrationModal()">
+                <i class="fas fa-user-plus"></i> Register Now
+            </button>
+            <button class="side-panel-option" onclick="openStudentLoginModal()">
+                <i class="fas fa-user-graduate"></i> Student Login
+            </button>
+            <a href="admin.html" class="side-panel-option">
+                <i class="fas fa-user-shield"></i> Admin Login
+            </a>
+            <a href="courses.html" class="side-panel-option">
+                <i class="fas fa-book"></i> Courses
+            </a>
+            <a href="about.html" class="side-panel-option">
+                <i class="fas fa-info-circle"></i> About Us
+            </a>
+            <a href="contact.html" class="side-panel-option" style="background: rgba(255, 215, 0, 0.15);">
+                <i class="fas fa-phone"></i> Contact
+            </a>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal-overlay" id="registrationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">BUC<div class="gear"></div>Del Registration</div>
+                <button class="close-btn" onclick="closeRegistrationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 40px; color: #b8a3c7;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 50px; margin-bottom: 20px; color: #ffd700;"></i>
+                    <h3 style="color: #ffd700; margin-bottom: 15px;">Registration Feature</h3>
+                    <p>This registration modal would connect to your backend system. For full functionality, please use the registration form on the homepage.</p>
+                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="closeRegistrationModal(); window.location.href='index.html';">Go to Homepage</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Login Modal -->
+    <div class="modal-overlay student-login-modal" id="studentLoginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Student Portal</div>
+                <button class="close-btn" onclick="closeStudentLoginModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 40px; color: #b8a3c7;">
+                    <i class="fas fa-graduation-cap" style="font-size: 50px; margin-bottom: 20px; color: #ffd700;"></i>
+                    <h3 style="color: #ffd700; margin-bottom: 15px;">Student Login</h3>
+                    <p>Student login functionality is available on the homepage. Please visit the homepage to access the student portal.</p>
+                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="closeStudentLoginModal(); window.location.href='index.html';">Go to Homepage</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        const threeLineBtn = document.getElementById('threeLineBtn');
+        const sidePanel = document.getElementById('sidePanel');
+        const sidePanelClose = document.getElementById('sidePanelClose');
+        const sidePanelOverlay = document.getElementById('sidePanelOverlay');
+
+        function toggleSidePanel() {
+            threeLineBtn.classList.toggle('active');
+            sidePanel.classList.toggle('active');
+            sidePanelOverlay.classList.toggle('active');
+        }
+
+        function closeSidePanel() {
+            threeLineBtn.classList.remove('active');
+            sidePanel.classList.remove('active');
+            sidePanelOverlay.classList.remove('active');
+        }
+
+        // Modal functionality
+        function openRegistrationModal() {
+            document.getElementById('registrationModal').classList.add('show');
+            closeSidePanel();
+        }
+
+        function closeRegistrationModal() {
+            document.getElementById('registrationModal').classList.remove('show');
+        }
+
+        function openStudentLoginModal() {
+            document.getElementById('studentLoginModal').classList.add('show');
+            closeSidePanel();
+        }
+
+        function closeStudentLoginModal() {
+            document.getElementById('studentLoginModal').classList.remove('show');
+        }
+
+        // Contact form functionality
+        function initializeContactForm() {
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('contactName').value.trim();
+                    const email = document.getElementById('contactEmail').value.trim();
+                    const message = document.getElementById('contactMessage').value.trim();
+                    
+                    if (!name || !email || !message) {
+                        alert('Please fill in all required fields');
+                        return;
+                    }
+                    
+                    if (!isValidEmail(email)) {
+                        alert('Please enter a valid email address');
+                        return;
+                    }
+                    
+                    // In a real application, you would send this data to your backend
+                    alert('Thank you for your message! We will get back to you soon.');
+                    resetContactForm();
+                });
+            }
+        }
+
+        function resetContactForm() {
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.reset();
+            }
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('registrationModal').addEventListener('click', function(e) {
+            if (e.target === this) closeRegistrationModal();
+        });
+        
+        document.getElementById('studentLoginModal').addEventListener('click', function(e) {
+            if (e.target === this) closeStudentLoginModal();
+        });
+
+        // Escape key to close modals and side panel
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRegistrationModal();
+                closeStudentLoginModal();
+                closeSidePanel();
+            }
+        });
+
+        // Event listeners
+        threeLineBtn.addEventListener('click', toggleSidePanel);
+        sidePanelClose.addEventListener('click', closeSidePanel);
+        sidePanelOverlay.addEventListener('click', closeSidePanel);
+
+        // Initialize contact form
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeContactForm();
+        });
+    </script>
+</body>
+</html>

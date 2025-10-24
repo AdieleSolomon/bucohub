@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUCODel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+        
+        /* ============================= */
+        /*        BASIC RESET            */
+        /* ============================= */
+        * { 
+            margin: 0;
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .page-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        header {
+            background: #2d1b3d;
+            padding: 15px 20px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo { 
+            color: #ffd700; 
+            font-size: 26px; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center;
+            margin-left: 10px;
+            gap: 10px; 
+        }
+        
+        .gear { 
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f5f5f5; 
+            border-radius: 50%; 
+            position: relative;
+        }
+
+        .gear::before { 
+            content: ''; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            width: 8px; 
+            height: 8px;
+            background: #f5f5f5; 
+            border-radius: 50%; 
+        }
+
+        .tagline { 
+            color: #b8a3c7; 
+            font-size: 14px; 
+            margin-top: 5px; 
+            letter-spacing: 2px; 
+            text-align: left;
+            position: absolute;
+            left: 10px;
+            right: 0;
+            bottom: 5px;
+        }
+
+        .main-title { 
+            color: white; 
+            font-size: 36px; 
+            font-weight: bold; 
+            line-height: 1.2; 
+            margin-bottom: 25px; 
+        }
+
+        .content { 
+            padding: 30px 25px; 
+            background: linear-gradient(135deg, #4a2c5a 0%, #3d1a4f 100%); 
+            width: 100%; 
+        }
+
+        .hero-section .banner-image img { 
+            width: 100%; 
+            height: 50%;
+            display: block; 
+            margin: 0 auto; 
+        }
+        
+        .banner-image:hover{
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+        
+        .tech-list li:hover{
+            color: #ffd700;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .tech-list { 
+            list-style: none; 
+            margin-bottom: 30px; 
+        }
+
+        .tech-list li { 
+            color: white; 
+            font-size: 16px; 
+            margin-bottom: 12px; 
+            padding-left: 20px; 
+            position: relative; 
+        }
+
+        .tech-list li::before { 
+            content: '●'; 
+            color: #ffd700; 
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            font-size: 20px; 
+        }
+
+        /* Student Login Modal Styles */
+        .student-login-modal .modal-content {
+            max-width: 400px;
+        }
+        
+        .login-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #2d1b3d;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        .login-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: #b8a3c7;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        
+        .login-tab.active {
+            background: #ffd700;
+            color: #2d1b3d;
+            font-weight: bold;
+        }
+        
+        .login-form-container {
+            display: none;
+        }
+        
+        .login-form-container.active {
+            display: block;
+        }
+        
+        .student-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .success-actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .success-actions .btn {
+            margin: 5px;
+        }
+
+        .contact-info { 
+            background: rgba(0, 0, 0, 0.3); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 20px; 
+        }
+
+        .contact-row { 
+            display: flex; 
+            justify-content: space-around; 
+            color: #b8a3c7; 
+            font-size: 12px; 
+            margin-bottom: 8px; 
+        }
+
+        .contact-row .phone-numbers { 
+            padding-right: 100px; 
+            border-right: 2px solid #ccc; 
+        }
+
+        .phone-numbers { 
+            font-weight: bold; 
+            color: white; 
+        }
+
+        .address { 
+            font-size: 11px; 
+            line-height: 1.3; 
+        }
+
+        .website { 
+            background: #ffd700; 
+            color: #2d1b3d; 
+            text-align: center; 
+            padding: 8px; 
+            font-size: 12px; 
+            font-weight: bold; 
+            margin-top: 15px; 
+            border-radius: 5px; 
+        }
+
+        .yellow-accent { 
+            height: 8px; 
+            background: #ffd700;
+            margin: 20px 0; 
+        }
+
+        .yellow-btn { 
+            background: #ffd700; 
+            color: #2d1b3d;
+            border: none; 
+            padding: 6px 12px; 
+            font-size: 12px; 
+            font-weight: bold;
+            border-radius: 5px; 
+            cursor: pointer; 
+            float: right; 
+            margin-left: 10px; 
+            transition: background 0.3s ease; 
+        }
+
+        .blue-btn { 
+            background: #996fbe; 
+            color: #ffd700;
+            border: none; 
+            padding: 6px 12px; 
+            font-size: 12px; 
+            font-weight: bold;
+            border-radius: 5px; 
+            cursor: pointer; 
+            float: right; 
+            margin-left: 10px; 
+            transition: background 0.3s ease; 
+        } 
+
+        .yellow-btn:hover { 
+            background: #e6c200; 
+        }
+
+        .blue-btn:hover { 
+            background: #3d1a4f; 
+        }   
+
+        .btn { 
+            padding: 12px 30px; 
+            border: none; 
+            border-radius: 5px; 
+            font-size: 14px; 
+            font-weight: bold; 
+            cursor: pointer; 
+        }
+
+        .btn-primary { 
+            background: #ffd700; 
+            color: #2d1b3d; 
+        }
+
+        .btn-secondary { 
+            background: transparent; 
+            color: #b8a3c7; 
+            border: 2px solid #b8a3c7; 
+        }
+
+        /* ============================= */
+        /*        MODAL STYLES           */
+        /* ============================= */
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.8); 
+            z-index: 1000; 
+            opacity: 0; 
+            transition: opacity 0.3s ease; 
+        }
+
+        .modal-overlay.show { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 1; 
+        }
+
+        .modal-content { 
+            background: linear-gradient(135deg, #4a2c5a 0%, #3d1a4f 100%); 
+            border-radius: 10px; 
+            width: 90%; 
+            max-width: 500px; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            position: relative; 
+            transform: scale(0.7); 
+            transition: transform 0.3s ease; 
+        }
+
+        .modal-overlay.show .modal-content { 
+            transform: scale(1); 
+        }
+
+        .modal-header { 
+            background: #2d1b3d; 
+            padding: 20px; 
+            border-radius: 10px 10px 0 0; 
+            position: relative; 
+        }
+
+        .modal-title { 
+            color: #ffd700; 
+            font-size: 24px; 
+            font-weight: bold; 
+            text-align: center; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+        }
+
+        .close-btn { 
+            position: absolute; 
+            right: 15px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: none; 
+            border: none; 
+            color: #b8a3c7; 
+            font-size: 24px; 
+            cursor: pointer; 
+        }
+
+        .modal-body { 
+            padding: 30px; 
+        }
+
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+
+        .form-group label { 
+            display: block; 
+            color: #ffd700; 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            font-size: 14px; 
+        }
+
+        .form-group input, 
+        .form-group select,
+        .form-group textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #b8a3c7; 
+            border-radius: 5px; 
+            background: rgba(255, 255, 255, 0.9); 
+            font-size: 14px; 
+            resize: vertical;
+        }
+
+        .form-group textarea { 
+            height: 100px; 
+            min-height: 80px;
+        }
+
+        legend { 
+            color: #ffd700; 
+            font-size: 18px; 
+            font-weight: bold; 
+            margin-bottom: 10px; 
+        }
+
+        .checkbox-group { 
+            display: flex; 
+            flex-direction: column;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center; 
+            margin-bottom: 10px; 
+        }
+
+        .form-buttons { 
+            display: flex; 
+            gap: 15px; 
+            justify-content: center; 
+            margin-top: 30px; 
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .password-weak {
+            background: #ef4444;
+            width: 33%;
+        }
+
+        .password-medium {
+            background: #f59e0b;
+            width: 66%;
+        }
+
+        .password-strong {
+            background: #10b981;
+            width: 100%;
+        }
+
+        /* ============================= */
+        /*        IMAGE UPLOAD STYLES    */
+        /* ============================= */
+        .image-upload-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #ffd700;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .image-preview.dragover {
+            border-color: #e6c200;
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .image-preview .placeholder {
+            color: #b8a3c7;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .upload-btn {
+            background: #ffd700;
+            color: #2d1b3d;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: #e6c200;
+            transform: translateY(-2px);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-info {
+            font-size: 12px;
+            color: #b8a3c7;
+            margin-top: 8px;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-image:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .success-message { 
+            display: none; 
+            text-align: center; 
+            padding: 20px; 
+            color: #ffd700; 
+        }
+
+        .success-message h3 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        /* ============================= */
+        /*        NAVIGATION STYLES      */
+        /* ============================= */
+        .three-line-btn {
+            width: 40px;
+            height: 40px;
+            background: #2d1b3d;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .three-line-btn:hover {
+            background: #3d1a4f;
+        }
+
+        .three-line-btn .line {
+            width: 20px;
+            height: 2px;
+            background: #ffd700;
+            transition: all 0.3s ease;
+        }
+
+        .three-line-btn.active .line:nth-child(1) {
+            transform: translateY(6px) rotate(45deg);
+        }
+
+        .three-line-btn.active .line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .three-line-btn.active .line:nth-child(3) {
+            transform: translateY(-6px) rotate(-45deg);
+        }
+
+        .side-panel {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 300px;
+            background: linear-gradient(135deg, #4a2c5a 0%, #3d1a4f 100%);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        .side-panel.active {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        .side-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .side-panel-title {
+            color: #ffd700;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .side-panel-close {
+            background: none;
+            border: none;
+            color: #b8a3c7;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .side-panel-close:hover {
+            color: #ffd700;
+        }
+
+        .side-panel-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .side-panel-option {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            text-align: left;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .side-panel-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .side-panel-option i {
+            margin-right: 10px;
+            color: #ffd700;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* ============================= */
+        /*        RESPONSIVE DESIGN      */
+        /* ============================= */
+        @media (max-width: 768px) {
+            .side-panel {
+                width: 100%;
+                right: 0;
+                left: 0;
+            }
+            
+            .contact-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .contact-row .phone-numbers {
+                padding-right: 0;
+                border-right: none;
+                border-bottom: 2px solid #ccc;
+                padding-bottom: 15px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+            
+            .form-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 20px;
+            }
+            
+            .main-title {
+                font-size: 28px;
+            }
+            
+            .image-preview {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+        /* ============================= */
+        /*        LOGIN ERROR STYLES     */
+        /* ============================= */
+        .login-error-message {
+            background: #ef4444;
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+            border-left: 4px solid #dc2626;
+            animation: slideIn 0.3s ease;
+        }
+
+        .login-success-message {
+            background: #10b981;
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+            border-left: 4px solid #059669;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================= */
+        /*        PASSWORD RESET STYLES  */
+        /* ============================= */
+        .reset-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #ffd700;
+        }
+
+        .reset-message h3 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .reset-message p {
+            margin-bottom: 20px;
+            color: #b8a3c7;
+        }
+
+        .reset-form-container {
+            display: none;
+        }
+
+        .reset-form-container.active {
+            display: block;
+        }
+
+        .reset-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #2d1b3d;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .reset-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: #b8a3c7;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .reset-tab.active {
+            background: #ffd700;
+            color: #2d1b3d;
+            font-weight: bold;
+        }
+
+        .countdown {
+            color: #ffd700;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .resend-link {
+            color: #ffd700;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .resend-link:hover {
+            color: #e6c200;
+        }
+
+        .resend-link.disabled {
+            color: #b8a3c7;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">BUC<div class="gear"></div>Del</div>
+                <div class="tagline">TECHNOLOGICAL HUB</div>
+            </div>
+
+            <!-- Three-line button -->
+            <button class="three-line-btn" id="threeLineBtn" title="Toggle Menu">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </button>
+
+            <!-- Side panel -->
+            <div class="side-panel" id="sidePanel">
+                <div class="side-panel-header">
+                    <div class="side-panel-title">BUCODel Menu</div>
+                    <button class="side-panel-close" id="sidePanelClose">&times;</button>
+                </div>
+                <div class="side-panel-content">
+                    <button class="side-panel-option" onclick="window.location.href='index.html'">
+                        <i class="fas fa-home"></i> Home
+                    </button>
+                    <button class="side-panel-option" onclick="openRegistrationModal()">
+                        <i class="fas fa-user-plus"></i> Register Now
+                    </button>
+                    <button class="side-panel-option" onclick="openStudentLoginModal()">
+                        <i class="fas fa-user-graduate"></i> Student Login
+                    </button>
+                    <button class="side-panel-option" onclick="window.location.href='admin.html'">
+                        <i class="fas fa-user-shield"></i> Admin Login
+                    </button>
+                    <button class="side-panel-option" onclick="window.location.href='courses.html'">
+                        <i class="fas fa-book"></i> Courses
+                    </button>
+                    <button class="side-panel-option" onclick="window.location.href='about.html'">
+                        <i class="fas fa-info-circle"></i> About Us
+                    </button>
+                    <button class="side-panel-option" onclick="window.location.href='contact.html'">
+                        <i class="fas fa-phone"></i> Contact
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="hero-section">
+            <div class="banner-image">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000&q=80" alt="Students learning technology">
+            </div>
+        </div>
+        <div class="yellow-accent"></div>
+        <main class="content">
+            <h1 class="main-title">Get into<br> <small>Tech</small></h1>
+            <ul class="tech-list">
+                <li>UI/UX Design</li>
+                <li>Front-end Dev.</li>
+                <li>Back-end Dev.</li>
+                <li>Full stack Dev.</li>
+                <li>Data Science</li>
+                <li>
+                    Digital Marketing
+                    <button class="yellow-btn" onclick="openRegistrationModal()">Register Now</button>
+                </li>
+            </ul>
+
+            <hr />
+
+            <div class="contact-info">
+                <div class="contact-row">
+                    <div class="phone-numbers">08064530154 <br> 08058100008</div>
+                    <div class="address">BUCODel Building,<br> Behind Deeper Life Church,<br> Tudun wada, Gusau State</div>
+                </div>
+            </div>
+            <footer class="website">www.codel.babcock.edu.ng/techhub</footer>
+        </main>
+    </div>
+
+    <!-- Student Login Modal -->
+    <div class="modal-overlay student-login-modal" id="studentLoginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Student Portal</div>
+                <button class="close-btn" onclick="closeStudentLoginModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="login-tabs">
+                    <button class="login-tab active" onclick="switchLoginTab('login')">Login</button>
+                    <button class="login-tab" onclick="switchLoginTab('register')">Register</button>
+                </div>
+                
+                <!-- Login Form -->
+                <div id="studentLoginForm" class="login-form-container active">
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail">Email *</label>
+                            <input type="email" id="loginEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password *</label>
+                            <input type="password" id="loginPassword" name="password" required>
+                            <div style="text-align: right; margin-top: 5px;">
+                                <small style="color: #b8a3c7; cursor: pointer;" onclick="showForgotPassword()">
+                                    Forgot Password?
+                                </small>
+                            </div>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeStudentLoginModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Success Message with Login Button -->
+                <div class="success-message" id="loginSuccessMessage">
+                    <h3>Registration Successful!!!</h3>
+                    <p>Your account has been created successfully. Please login to access the student portal.</p>
+                    <div class="success-actions">
+                        <button class="btn btn-primary" onclick="openStudentLoginModal()">
+                            <i class="fas fa-sign-in-alt"></i> Login to Student Portal
+                        </button>
+                        <button class="btn btn-secondary" onclick="closeRegistrationModal()">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal-overlay" id="registrationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">BUC<div class="gear"></div>Del Registration</div>
+                <button class="close-btn" onclick="closeRegistrationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="registrationForm">
+                    <!-- Image Upload Section -->
+                    <div class="image-upload-container">
+                        <div class="image-preview" id="imagePreview">
+                            <div class="placeholder">
+                                <i class="fas fa-user" style="font-size: 40px; margin-bottom: 10px; display: block;"></i>
+                                No Image Selected
+                            </div>
+                            <img id="previewImage" src="" alt="Profile Preview">
+                            <button type="button" class="remove-image" id="removeImage" title="Remove image">
+                                &times;
+                            </button>
+                        </div>
+                        
+                        <input type="file" id="profilePicture" name="profilePicture" accept="image/*" class="file-input">
+                        <button type="button" class="upload-btn" onclick="document.getElementById('profilePicture').click()">
+                            <i class="fas fa-camera"></i> Upload Photo
+                        </button>
+                        <div class="upload-info">Max file size: 5MB • Supported formats: JPG, PNG, GIF</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" name="password" required minlength="6">
+                        <div class="upload-info">Minimum 6 characters</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password *</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" name="age" min="16" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="education">Education</label>
+                        <input type="text" id="education" name="education" placeholder="Highest education level">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experience">Experience</label>
+                        <input type="text" id="experience" name="experience" placeholder="Previous experience (if any)">
+                    </div>
+
+                    <fieldset class="form-group">
+                        <legend>Courses of Interest</legend>
+                        <div class="checkbox-group">
+                            <div>
+                                <input type="checkbox" id="course_ui" name="courses" value="UI/UX Design">
+                                <label for="course_ui"> UI/UX Design</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="course_web" name="courses" value="Web Development">
+                                <label for="course_web"> Web Development</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="course_mobile" name="courses" value="Mobile App Development">
+                                <label for="course_mobile"> Mobile App Development</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="course_data" name="courses" value="Data Science">
+                                <label for="course_data"> Data Science</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="course_ai" name="courses" value="Artificial Intelligence">
+                                <label for="course_ai"> Artificial Intelligence</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="course_cyber" name="courses" value="Cybersecurity">
+                                <label for="course_cyber"> Cybersecurity</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <div class="form-group">
+                        <label for="motivation">Motivation</label>
+                        <textarea id="motivation" name="motivation" placeholder="Why do you want to join BUCODel?"></textarea>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="submit" class="btn btn-primary">Submit Registration</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeRegistrationModal()">Cancel</button>
+                    </div>
+                </form>
+                <div class="success-message" id="successMessage">
+                    <h3>Registration Successful!!!</h3>
+                    <p>Thank you for registering with BUCODel. Please login to access the student portal.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div class="modal-overlay" id="passwordResetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Reset Password</div>
+                <button class="close-btn" onclick="closePasswordResetModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="reset-tabs">
+                    <button class="reset-tab active" onclick="switchResetTab('request')">Request Reset</button>
+                    <button class="reset-tab" onclick="switchResetTab('reset')">Enter Code</button>
+                </div>
+                
+                <!-- Request Reset Form -->
+                <div id="requestResetForm" class="reset-form-container active">
+                    <form id="resetRequestForm">
+                        <div class="form-group">
+                            <label for="resetEmail">Email Address *</label>
+                            <input type="email" id="resetEmail" name="email" required>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-primary">Send Reset Link</button>
+                            <button type="button" class="btn btn-secondary" onclick="closePasswordResetModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Reset Password Form -->
+                <div id="resetPasswordForm" class="reset-form-container">
+                    <form id="resetForm">
+                        <div class="form-group">
+                            <label for="resetCode">Reset Code *</label>
+                            <input type="text" id="resetCode" name="code" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password *</label>
+                            <input type="password" id="newPassword" name="newPassword" required minlength="6">
+                            <div class="upload-info">Minimum 6 characters</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmNewPassword">Confirm New Password *</label>
+                            <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-primary">Reset Password</button>
+                            <button type="button" class="btn btn-secondary" onclick="closePasswordResetModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Reset Success Message -->
+                <div class="reset-message" id="resetSuccessMessage">
+                    <h3>Reset Email Sent!</h3>
+                    <p>We've sent a password reset link to your email address.</p>
+                    <p>Please check your inbox and follow the instructions.</p>
+                    <div class="countdown" id="resendCountdown"></div>
+                    <div class="resend-link" id="resendLink" onclick="resendResetEmail()">Resend Email</div>
+                </div>
+                
+                <!-- Password Reset Success Message -->
+                <div class="reset-message" id="passwordResetSuccessMessage">
+                    <h3>Password Reset Successful!</h3>
+                    <p>Your password has been successfully reset.</p>
+                    <div class="success-actions">
+                        <button class="btn btn-primary" onclick="closePasswordResetModal(); openStudentLoginModal();">
+                            <i class="fas fa-sign-in-alt"></i> Login Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =============================
+        // GLOBAL VARIABLES
+        // =============================
+        const threeLineBtn = document.getElementById('threeLineBtn');
+        const sidePanel = document.getElementById('sidePanel');
+        const sidePanelClose = document.getElementById('sidePanelClose');
+        const API_BASE_URL = 'http://localhost:3000';
+
+        // =============================
+        // NAVIGATION FUNCTIONALITY
+        // =============================
+        function toggleSidePanel() {
+            threeLineBtn.classList.toggle('active');
+            sidePanel.classList.toggle('active');
+        }
+
+        function closeSidePanelOnClickOutside(event) {
+            const isClickInsideSidePanel = sidePanel.contains(event.target);
+            const isClickOnMenuButton = threeLineBtn.contains(event.target);
+            
+            if (!isClickInsideSidePanel && !isClickOnMenuButton && sidePanel.classList.contains('active')) {
+                toggleSidePanel();
+            }
+        }
+
+        // =============================
+        // MODAL FUNCTIONALITY
+        // =============================
+        function openRegistrationModal() {
+            document.getElementById('registrationModal').classList.add('show');
+            closeSidePanelIfOpen();
+        }
+
+        function closeRegistrationModal() {
+            document.getElementById('registrationModal').classList.remove('show');
+            resetForm();
+        }
+
+        function openStudentLoginModal() {
+            document.getElementById('studentLoginModal').classList.add('show');
+            resetLoginSuccessMessage();
+            closeSidePanelIfOpen();
+        }
+
+        function closeStudentLoginModal() {
+            document.getElementById('studentLoginModal').classList.remove('show');
+            resetLoginForm();
+        }
+
+        function openPasswordResetModal() {
+            document.getElementById('passwordResetModal').classList.add('show');
+            resetPasswordResetModal();
+            closeSidePanelIfOpen();
+        }
+
+        function closePasswordResetModal() {
+            document.getElementById('passwordResetModal').classList.remove('show');
+            resetPasswordResetModal();
+        }
+
+        function closeSidePanelIfOpen() {
+            if (sidePanel.classList.contains('active')) {
+                toggleSidePanel();
+            }
+        }
+
+        function switchLoginTab(tab) {
+            // Update tabs
+            document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show appropriate form
+            document.getElementById('studentLoginForm').classList.remove('active');
+            
+            if (tab === 'login') {
+                document.getElementById('studentLoginForm').classList.add('active');
+                resetLoginSuccessMessage();
+            } else if (tab === 'register') {
+                closeStudentLoginModal();
+                openRegistrationModal();
+            }
+        }
+
+        function switchResetTab(tab) {
+            // Update tabs
+            document.querySelectorAll('.reset-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show appropriate form
+            document.getElementById('requestResetForm').classList.remove('active');
+            document.getElementById('resetPasswordForm').classList.remove('active');
+            
+            if (tab === 'request') {
+                document.getElementById('requestResetForm').classList.add('active');
+            } else if (tab === 'reset') {
+                document.getElementById('resetPasswordForm').classList.add('active');
+            }
+        }
+
+        // =============================
+        // IMAGE UPLOAD FUNCTIONALITY
+        // =============================
+        function initializeImageUpload() {
+            const profilePictureInput = document.getElementById('profilePicture');
+            const previewImage = document.getElementById('previewImage');
+            const imagePreview = document.getElementById('imagePreview');
+            const removeImageBtn = document.getElementById('removeImage');
+            const placeholder = imagePreview.querySelector('.placeholder');
+
+            // Handle file selection
+            profilePictureInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                
+                if (file) {
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select an image file (JPG, PNG, GIF)');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // Validate file size (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('File size must be less than 5MB');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        removeImageBtn.style.display = 'flex';
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Remove image
+            removeImageBtn.addEventListener('click', function() {
+                profilePictureInput.value = '';
+                previewImage.src = '';
+                previewImage.style.display = 'none';
+                placeholder.style.display = 'none';
+                removeImageBtn.style.display = 'none';
+                placeholder.style.display = 'block';
+            });
+
+            // Drag and drop functionality
+            imagePreview.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            imagePreview.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+
+            imagePreview.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    profilePictureInput.files = files;
+                    profilePictureInput.dispatchEvent(new Event('change'));
+                }
+            });
+
+            // Click on preview to trigger file input
+            imagePreview.addEventListener('click', function(e) {
+                if (e.target === this || e.target.classList.contains('placeholder')) {
+                    profilePictureInput.click();
+                }
+            });
+        }
+
+        function resetImagePreview() {
+            const profilePictureInput = document.getElementById('profilePicture');
+            const previewImage = document.getElementById('previewImage');
+            const imagePreview = document.getElementById('imagePreview');
+            const removeImageBtn = document.getElementById('removeImage');
+            const placeholder = imagePreview.querySelector('.placeholder');
+            
+            profilePictureInput.value = '';
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+            placeholder.style.display = 'block';
+            removeImageBtn.style.display = 'none';
+            imagePreview.classList.remove('dragover');
+        }
+
+        // =============================
+        // FORM SUBMISSION FUNCTIONALITY - CONNECTED TO REAL BACKEND
+        // =============================
+        function initializeFormSubmission() {
+            document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get all selected courses
+                const selectedCourses = [];
+                const courseCheckboxes = document.querySelectorAll('input[name="courses"]:checked');
+                courseCheckboxes.forEach(checkbox => {
+                    selectedCourses.push(checkbox.value);
+                });
+                
+                // Validate required fields
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
+                    alert('Please fill in all required fields (marked with *)');
+                    return;
+                }
+                
+                // Validate password
+                if (!validatePassword()) {
+                    return;
+                }
+                
+                // Create FormData object to handle file upload
+                const formData = new FormData();
+                formData.append('firstName', firstName);
+                formData.append('lastName', lastName);
+                formData.append('email', email);
+                formData.append('phone', phone);
+                formData.append('password', password);
+                formData.append('age', document.getElementById('age').value);
+                formData.append('education', document.getElementById('education').value);
+                formData.append('experience', document.getElementById('experience').value);
+                formData.append('motivation', document.getElementById('motivation').value);
+                
+                // Append courses as array
+                selectedCourses.forEach(course => {
+                    formData.append('courses', course);
+                });
+                
+                // Append profile picture if selected
+                const profilePictureInput = document.getElementById('profilePicture');
+                if (profilePictureInput.files[0]) {
+                    formData.append('profilePicture', profilePictureInput.files[0]);
+                }
+                
+                console.log('Sending registration data to server...');
+                
+                try {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Registering...';
+                    
+                    const response = await fetch(`${API_BASE_URL}/api/register`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    console.log('Registration response:', result);
+                    
+                    if (response.ok) {
+                        showRegistrationSuccess(result);
+                    } else {
+                        alert(result.error || "Registration failed");
+                    }
+                } catch (err) {
+                    console.error('Registration error:', err);
+                    alert("Error saving registration. Please check your connection and make sure the server is running.");
+                } finally {
+                    const submitBtn = document.querySelector('#registrationForm button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit Registration';
+                    }
+                }
+            });
+        }
+
+        function showRegistrationSuccess(result) {
+            document.getElementById('registrationForm').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Show login option after delay
+            setTimeout(() => {
+                closeRegistrationModal();
+                showLoginSuccessMessage();
+            }, 2000);
+        }
+
+        function showLoginSuccessMessage() {
+            document.getElementById('studentLoginModal').classList.add('show');
+            document.getElementById('studentLoginForm').style.display = 'none';
+            document.getElementById('loginSuccessMessage').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('registrationForm').reset();
+            document.getElementById('registrationForm').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+            resetImagePreview();
+        }
+
+        // =============================
+        // PASSWORD VALIDATION
+        // =============================
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return false;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function validateNewPassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (newPassword.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return false;
+            }
+            
+            if (newPassword !== confirmNewPassword) {
+                alert('Passwords do not match');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // =============================
+        // STUDENT LOGIN FUNCTIONALITY - CONNECTED TO REAL BACKEND
+        // =============================
+        function initializeStudentLogin() {
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                
+                // Enhanced validation
+                if (!email || !password) {
+                    showLoginError('Please enter both email and password');
+                    return;
+                }
+                
+                if (!isValidEmail(email)) {
+                    showLoginError('Please enter a valid email address');
+                    return;
+                }
+                
+                try {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Logging in...';
+                    
+                    console.log('Attempting login for:', email);
+                    
+                    // Send login request to your actual backend
+                    const response = await fetch(`${API_BASE_URL}/api/students/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            email: email.toLowerCase(),
+                            password: password 
+                        })
+                    });
+                    
+                    // Check if response is OK
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Login failed:', response.status, errorText);
+                        
+                        // Try to parse as JSON, fallback to text
+                        let errorData;
+                        try {
+                            errorData = JSON.parse(errorText);
+                        } catch {
+                            errorData = { error: 'Login failed. Please try again.' };
+                        }
+                        
+                        throw new Error(errorData.error || errorData.message || `Login failed: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Login response:', data);
+                    
+                    if (data.success && data.student) {
+                        // Store student data and redirect to profile
+                        localStorage.setItem('studentData', JSON.stringify(data.student));
+                        localStorage.setItem('studentLoggedIn', 'true');
+                        localStorage.setItem('studentToken', data.token || 'authenticated');
+                        localStorage.setItem('studentId', data.student.id);
+                        
+                        showLoginSuccess('Login successful! Redirecting...');
+                        
+                        // Redirect after short delay
+                        setTimeout(() => {
+                            window.location.href = 'student-profile.html';
+                        }, 1500);
+                        
+                    } else {
+                        throw new Error(data.error || data.message || 'Login failed. Please check your credentials.');
+                    }
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    
+                    // Handle specific error types
+                    if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                        showLoginError('Network error: Cannot connect to server. Please make sure your backend server is running on localhost:3000');
+                    } else if (error.message.includes('404')) {
+                        showLoginError('Server endpoint not found. The student login endpoint may not be implemented yet.');
+                    } else if (error.message.includes('500')) {
+                        showLoginError('Server error. Please try again later.');
+                    } else {
+                        showLoginError(error.message || 'Login failed. Please try again.');
+                    }
+                } finally {
+                    const submitBtn = document.querySelector('#loginForm button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Login';
+                    }
+                }
+            });
+        }
+
+        // =============================
+        // HELPER FUNCTIONS
+        // =============================
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function showLoginError(message) {
+            // Remove any existing error messages
+            const existingError = document.querySelector('.login-error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Create error message element
+            const errorElement = document.createElement('div');
+            errorElement.className = 'login-error-message';
+            errorElement.textContent = message;
+            
+            // Insert before the form
+            const loginForm = document.getElementById('studentLoginForm');
+            if (loginForm) {
+                loginForm.insertBefore(errorElement, loginForm.firstChild);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (errorElement.parentNode) {
+                        errorElement.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        function showLoginSuccess(message) {
+            // Remove any existing error messages
+            const existingError = document.querySelector('.login-error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Create success message element
+            const successElement = document.createElement('div');
+            successElement.className = 'login-success-message';
+            successElement.textContent = message;
+            
+            // Insert before the form
+            const loginForm = document.getElementById('studentLoginForm');
+            if (loginForm) {
+                loginForm.insertBefore(successElement, loginForm.firstChild);
+            }
+        }
+
+        function resetLoginForm() {
+            document.getElementById('loginForm').reset();
+            
+            // Clear any error messages
+            const existingError = document.querySelector('.login-error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            const existingSuccess = document.querySelector('.login-success-message');
+            if (existingSuccess) {
+                existingSuccess.remove();
+            }
+        }
+
+        function resetLoginSuccessMessage() {
+            document.getElementById('studentLoginForm').style.display = 'block';
+            document.getElementById('loginSuccessMessage').style.display = 'none';
+            
+            // Clear any messages
+            resetLoginForm();
+        }
+
+        // =============================
+        // PASSWORD RESET FUNCTIONALITY
+        // =============================
+        function showForgotPassword() {
+            closeStudentLoginModal();
+            openPasswordResetModal();
+        }
+
+        function initializePasswordReset() {
+            // Request password reset
+            document.getElementById('resetRequestForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('resetEmail').value.trim();
+                
+                if (!email) {
+                    alert('Please enter your email address');
+                    return;
+                }
+                
+                if (!isValidEmail(email)) {
+                    alert('Please enter a valid email address');
+                    return;
+                }
+                
+                try {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Sending...';
+                    
+                    console.log('Requesting password reset for:', email);
+                    
+                    // For now, simulate the reset process since the endpoint may not exist
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Check if we can connect to the server first
+                    const testResponse = await fetch(`${API_BASE_URL}/`);
+                    if (!testResponse.ok) {
+                        throw new Error('Cannot connect to server. Please make sure the backend is running.');
+                    }
+                    
+                    // Note: You'll need to implement the actual password reset endpoint in your backend
+                    document.getElementById('requestResetForm').style.display = 'none';
+                    document.getElementById('resetSuccessMessage').style.display = 'block';
+                    startResendCountdown();
+                    
+                } catch (error) {
+                    console.error('Password reset request error:', error);
+                    alert(error.message || 'Password reset feature is not yet implemented. Please contact support.');
+                } finally {
+                    const submitBtn = document.querySelector('#resetRequestForm button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Send Reset Link';
+                    }
+                }
+            });
+            
+            // Reset password with code
+            document.getElementById('resetForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const code = document.getElementById('resetCode').value.trim();
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+                
+                if (!code || !newPassword || !confirmNewPassword) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                if (!validateNewPassword()) {
+                    return;
+                }
+                
+                try {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Resetting...';
+                    
+                    // Simulate API call for now
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // For demo, any code works
+                    if (code.length >= 4) {
+                        document.getElementById('resetPasswordForm').style.display = 'none';
+                        document.getElementById('passwordResetSuccessMessage').style.display = 'block';
+                    } else {
+                        throw new Error('Invalid reset code. Please check your email and try again.');
+                    }
+                } catch (error) {
+                    console.error('Password reset error:', error);
+                    alert(error.message || 'Failed to reset password. Please try again.');
+                } finally {
+                    const submitBtn = document.querySelector('#resetForm button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Reset Password';
+                    }
+                }
+            });
+        }
+
+        function startResendCountdown() {
+            let countdown = 60;
+            const countdownElement = document.getElementById('resendCountdown');
+            const resendLink = document.getElementById('resendLink');
+            
+            resendLink.classList.add('disabled');
+            
+            const timer = setInterval(() => {
+                countdownElement.textContent = `You can resend the email in ${countdown} seconds`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(timer);
+                    countdownElement.textContent = '';
+                    resendLink.classList.remove('disabled');
+                }
+            }, 1000);
+        }
+
+        function resendResetEmail() {
+            const resendLink = document.getElementById('resendLink');
+            
+            if (resendLink.classList.contains('disabled')) {
+                return;
+            }
+            
+            const email = document.getElementById('resetEmail').value.trim();
+            
+            if (!email) {
+                alert('Email address is required');
+                return;
+            }
+            
+            // Trigger the form submission again
+            document.getElementById('resetRequestForm').dispatchEvent(new Event('submit'));
+        }
+
+        function resetPasswordResetModal() {
+            document.getElementById('resetRequestForm').style.display = 'block';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+            document.getElementById('resetSuccessMessage').style.display = 'none';
+            document.getElementById('passwordResetSuccessMessage').style.display = 'none';
+            
+            document.getElementById('resetRequestForm').reset();
+            document.getElementById('resetForm').reset();
+            
+            // Reset tabs
+            document.querySelectorAll('.reset-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.reset-tab').classList.add('active');
+        }
+
+        // =============================
+        // EVENT LISTENERS
+        // =============================
+        function initializeEventListeners() {
+            // Navigation
+            threeLineBtn.addEventListener('click', toggleSidePanel);
+            sidePanelClose.addEventListener('click', toggleSidePanel);
+            document.addEventListener('click', closeSidePanelOnClickOutside);
+            
+            // Modal closing
+            document.getElementById('registrationModal').addEventListener('click', function(e) {
+                if (e.target === this) closeRegistrationModal();
+            });
+            
+            document.getElementById('studentLoginModal').addEventListener('click', function(e) {
+                if (e.target === this) closeStudentLoginModal();
+            });
+            
+            document.getElementById('passwordResetModal').addEventListener('click', function(e) {
+                if (e.target === this) closePasswordResetModal();
+            });
+            
+            // Escape key to close modals
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeRegistrationModal();
+                    closeStudentLoginModal();
+                    closePasswordResetModal();
+                }
+            });
+        }
+
+        // =============================
+        // INITIALIZATION
+        // =============================
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            initializeImageUpload();
+            initializeFormSubmission();
+            initializeStudentLogin();
+            initializePasswordReset();
+            
+            console.log('BUCODel Frontend Initialized');
+            console.log('API Base URL:', API_BASE_URL);
+            console.log('Make sure your backend server is running on localhost:3000');
+        });
+    </script>
+</body>
+</html>

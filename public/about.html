@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - BUCODel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Montserrat:wght@400;500;600;700&display=swap');
+        
+        * { 
+            margin: 0;
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #1a0b2e 0%, #2d1b3d 100%);
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .page-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            background: #2d1b3d;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2d1b3d 0%, #1a0b2e 100%);
+            padding: 20px 30px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ffd700;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo { 
+            color: #ffd700; 
+            font-size: 32px; 
+            font-weight: 800; 
+            display: flex; 
+            align-items: center;
+            gap: 10px; 
+            font-family: 'Raleway', sans-serif;
+            letter-spacing: 1px;
+        }
+        
+        .gear { 
+            width: 24px;
+            height: 24px;
+            border: 3px solid #ffd700; 
+            border-radius: 50%; 
+            position: relative;
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gear::before { 
+            content: ''; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            width: 10px; 
+            height: 10px;
+            background: #ffd700; 
+            border-radius: 50%; 
+        }
+
+        .tagline { 
+            color: #b8a3c7; 
+            font-size: 14px; 
+            margin-top: 5px; 
+            letter-spacing: 3px; 
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .hero-section {
+            position: relative;
+            height: 350px;
+            overflow: hidden;
+        }
+        
+        .banner-image {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(45, 27, 61, 0.7), rgba(45, 27, 61, 0.9)), 
+                        url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-content {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            max-width: 800px;
+        }
+        
+        .hero-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero-subtitle {
+            font-size: 18px;
+            color: #e0d6eb;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .yellow-accent { 
+            height: 8px; 
+            background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+            margin: 0; 
+        }
+
+        .content { 
+            padding: 40px 30px; 
+            background: linear-gradient(135deg, #3d1a4f 0%, #2d1b3d 100%); 
+            width: 100%; 
+        }
+
+        .page-title {
+            color: #ffd700;
+            font-size: 36px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: #b8a3c7;
+            font-size: 18px;
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .about-content {
+            color: #d0c5dd;
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .about-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .about-section:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .about-section h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-section h3 i {
+            font-size: 22px;
+        }
+
+        .tech-list { 
+            list-style: none; 
+            margin-bottom: 20px; 
+        }
+
+        .tech-list li { 
+            color: white; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+            padding-left: 30px; 
+            position: relative; 
+        }
+
+        .tech-list li::before { 
+            content: '✓'; 
+            color: #ffd700; 
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            font-size: 18px; 
+            font-weight: bold;
+            background: rgba(255, 215, 0, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .team-member {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 25px 20px;
+            border-radius: 12px;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+        
+        .team-member:hover::before {
+            transform: scaleX(1);
+        }
+
+        .team-member img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .team-member h4 {
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .team-member p {
+            color: #b8a3c7;
+            font-size: 15px;
+        }
+
+        .contact-info { 
+            background: rgba(0, 0, 0, 0.2); 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-top: 40px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-row { 
+            display: flex; 
+            justify-content: space-between; 
+            color: #b8a3c7; 
+            font-size: 14px; 
+            margin-bottom: 15px; 
+        }
+        
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .contact-row .phone-numbers { 
+            padding-right: 100px; 
+            border-right: 2px solid rgba(255, 255, 255, 0.2); 
+        }
+
+        .phone-numbers { 
+            font-weight: 600; 
+            color: white; 
+            font-size: 16px;
+        }
+
+        .address { 
+            font-size: 14px; 
+            line-height: 1.5; 
+        }
+        
+        .address-title {
+            color: #ffd700;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .website { 
+            background: linear-gradient(135deg, #ffd700, #ffed4e); 
+            color: #2d1b3d; 
+            text-align: center; 
+            padding: 12px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            margin-top: 20px; 
+            border-radius: 8px; 
+            letter-spacing: 0.5px;
+        }
+
+        .yellow-btn { 
+            background: linear-gradient(135deg, #ffd700, #ffed4e); 
+            color: #2d1b3d;
+            border: none; 
+            padding: 14px 28px; 
+            font-size: 16px; 
+            font-weight: 600;
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .yellow-btn:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Navigation Styles */
+        .three-line-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .three-line-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .three-line-btn .line {
+            width: 25px;
+            height: 3px;
+            background: #ffd700;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .side-panel {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(135deg, #3d1a4f 0%, #2d1b3d 100%);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: all 0.4s ease;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .side-panel.active {
+            right: 0;
+        }
+
+        .side-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .side-panel-title {
+            color: #ffd700;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .side-panel-close {
+            background: none;
+            border: none;
+            color: #b8a3c7;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .side-panel-close:hover {
+            color: #ffd700;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .side-panel-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .side-panel-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .side-panel-option:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(10px);
+        }
+
+        .side-panel-option i {
+            margin-right: 12px;
+            color: #ffd700;
+            width: 20px;
+            text-align: center;
+        }
+
+        .side-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .side-panel-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #3d1a4f 0%, #2d1b3d 100%);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateY(30px);
+            transition: transform 0.4s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2d1b3d 0%, #1a0b2e 100%);
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ffd700;
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #b8a3c7;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-btn:hover {
+            color: #ffd700;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .team-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .side-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .contact-row {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            .contact-row .phone-numbers {
+                padding-right: 0;
+                border-right: none;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+                padding-bottom: 20px;
+            }
+            
+            .team-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .hero-title {
+                font-size: 32px;
+            }
+            
+            .page-title {
+                font-size: 30px;
+            }
+            
+            header {
+                padding: 15px 20px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .about-section {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 26px;
+            }
+            
+            .page-title {
+                font-size: 26px;
+            }
+            
+            .hero-title {
+                font-size: 28px;
+            }
+            
+            .hero-subtitle {
+                font-size: 16px;
+            }
+            
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-section h3 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">BUC<div class="gear"></div>Del</div>
+                <div class="tagline">TECHNOLOGICAL HUB</div>
+            </div>
+
+            <!-- Three-line button -->
+            <button class="three-line-btn" id="threeLineBtn" title="Toggle Menu">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </button>
+        </header>
+        
+        <div class="hero-section">
+            <div class="banner-image">
+                <div class="hero-content">
+                    <h1 class="hero-title">About BUCODel</h1>
+                    <p class="hero-subtitle">Empowering the next generation of technology leaders through innovative education</p>
+                    <p class="page-subtitle">Discover our mission, vision, and the team dedicated to your success in the digital world</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="yellow-accent"></div>
+        
+        <main class="content">
+            <div class="about-content">
+                <div class="about-section">
+                    <h3><i class="fas fa-bullseye"></i> Our Mission</h3>
+                    <p>BUCODel is committed to providing high-quality technology education that equips students with the skills needed to thrive in the digital economy. We believe in practical, hands-on learning that prepares our students for real-world challenges and opportunities in the rapidly evolving tech landscape.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3><i class="fas fa-eye"></i> Our Vision</h3>
+                    <p>To become the leading technology education hub in Nigeria, producing world-class developers, designers, and digital professionals who will drive innovation and technological advancement across Africa and beyond. We envision a future where our graduates are at the forefront of digital transformation.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3><i class="fas fa-star"></i> Why Choose BUCODel?</h3>
+                    <ul class="tech-list">
+                        <li>Industry-relevant curriculum designed by technology experts</li>
+                        <li>Hands-on projects and real-world applications</li>
+                        <li>Experienced instructors with industry experience</li>
+                        <li>Career support and job placement assistance</li>
+                        <li>Modern learning facilities and resources</li>
+                        <li>Flexible learning options for different schedules</li>
+                        <li>Strong alumni network and industry connections</li>
+                        <li>Continuous curriculum updates to match industry trends</li>
+                    </ul>
+                </div>
+                
+                <div class="about-section">
+                    <h3><i class="fas fa-users"></i> Our Team</h3>
+                    <p>Our dedicated team of educators and industry professionals are committed to providing the highest quality technology education and support for our students.</p>
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Team Member">
+                            <h4>Dr. Adebayo Johnson</h4>
+                            <p>Director</p>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Team Member">
+                            <h4>Prof. Chinenye Okoro</h4>
+                            <p>Academic Head</p>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Team Member">
+                            <h4>Engr. Ibrahim Musa</h4>
+                            <p>Technical Director</p>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Team Member">
+                            <h4>Mrs. Fatima Bello</h4>
+                            <p>Student Affairs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <button class="yellow-btn" onclick="window.location.href='courses.html'">Explore Our Courses</button>
+            </div>
+            
+            <div class="contact-info">
+                <div class="contact-row">
+                    <div class="contact-item">
+                        <div class="phone-numbers">08064530154 <br> 08058100008</div>
+                        <div>Contact our admissions team</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="address-title">Our Location</div>
+                        <div class="address">BUCODel Building,<br> Behind Deeper Life Church,<br> Tudun wada, Gusau State</div>
+                    </div>
+                </div>
+            </div>
+            <footer class="website">www.codel.babcock.edu.ng/techhub</footer>
+        </main>
+    </div>
+
+    <!-- Side panel overlay -->
+    <div class="side-panel-overlay" id="sidePanelOverlay"></div>
+
+    <!-- Side panel -->
+    <div class="side-panel" id="sidePanel">
+        <div class="side-panel-header">
+            <div class="side-panel-title">BUCODel Menu</div>
+            <button class="side-panel-close" id="sidePanelClose">&times;</button>
+        </div>
+        <div class="side-panel-content">
+            <a href="index.html" class="side-panel-option">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <button class="side-panel-option" onclick="openRegistrationModal()">
+                <i class="fas fa-user-plus"></i> Register Now
+            </button>
+            <button class="side-panel-option" onclick="openStudentLoginModal()">
+                <i class="fas fa-user-graduate"></i> Student Login
+            </button>
+            <a href="admin.html" class="side-panel-option">
+                <i class="fas fa-user-shield"></i> Admin Login
+            </a>
+            <a href="courses.html" class="side-panel-option">
+                <i class="fas fa-book"></i> Courses
+            </a>
+            <a href="about.html" class="side-panel-option" style="background: rgba(255, 215, 0, 0.15);">
+                <i class="fas fa-info-circle"></i> About Us
+            </a>
+            <a href="contact.html" class="side-panel-option">
+                <i class="fas fa-phone"></i> Contact
+            </a>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal-overlay" id="registrationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">BUC<div class="gear"></div>Del Registration</div>
+                <button class="close-btn" onclick="closeRegistrationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 40px; color: #b8a3c7;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 50px; margin-bottom: 20px; color: #ffd700;"></i>
+                    <h3 style="color: #ffd700; margin-bottom: 15px;">Registration Feature</h3>
+                    <p>This registration modal would connect to your backend system. For full functionality, please use the registration form on the homepage.</p>
+                    <button class="yellow-btn" style="margin-top: 20px;" onclick="closeRegistrationModal(); window.location.href='index.html';">Go to Homepage</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Login Modal -->
+    <div class="modal-overlay student-login-modal" id="studentLoginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Student Portal</div>
+                <button class="close-btn" onclick="closeStudentLoginModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 40px; color: #b8a3c7;">
+                    <i class="fas fa-graduation-cap" style="font-size: 50px; margin-bottom: 20px; color: #ffd700;"></i>
+                    <h3 style="color: #ffd700; margin-bottom: 15px;">Student Login</h3>
+                    <p>Student login functionality is available on the homepage. Please visit the homepage to access the student portal.</p>
+                    <button class="yellow-btn" style="margin-top: 20px;" onclick="closeStudentLoginModal(); window.location.href='index.html';">Go to Homepage</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        const threeLineBtn = document.getElementById('threeLineBtn');
+        const sidePanel = document.getElementById('sidePanel');
+        const sidePanelClose = document.getElementById('sidePanelClose');
+        const sidePanelOverlay = document.getElementById('sidePanelOverlay');
+
+        function toggleSidePanel() {
+            threeLineBtn.classList.toggle('active');
+            sidePanel.classList.toggle('active');
+            sidePanelOverlay.classList.toggle('active');
+        }
+
+        function closeSidePanel() {
+            threeLineBtn.classList.remove('active');
+            sidePanel.classList.remove('active');
+            sidePanelOverlay.classList.remove('active');
+        }
+
+        // Modal functionality
+        function openRegistrationModal() {
+            document.getElementById('registrationModal').classList.add('show');
+            closeSidePanel();
+        }
+
+        function closeRegistrationModal() {
+            document.getElementById('registrationModal').classList.remove('show');
+        }
+
+        function openStudentLoginModal() {
+            document.getElementById('studentLoginModal').classList.add('show');
+            closeSidePanel();
+        }
+
+        function closeStudentLoginModal() {
+            document.getElementById('studentLoginModal').classList.remove('show');
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('registrationModal').addEventListener('click', function(e) {
+            if (e.target === this) closeRegistrationModal();
+        });
+        
+        document.getElementById('studentLoginModal').addEventListener('click', function(e) {
+            if (e.target === this) closeStudentLoginModal();
+        });
+
+        // Escape key to close modals and side panel
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRegistrationModal();
+                closeStudentLoginModal();
+                closeSidePanel();
+            }
+        });
+
+        // Event listeners
+        threeLineBtn.addEventListener('click', toggleSidePanel);
+        sidePanelClose.addEventListener('click', closeSidePanel);
+        sidePanelOverlay.addEventListener('click', closeSidePanel);
+    </script>
+</body>
+</html>
