@@ -1,3 +1,4 @@
+require('dotenv').config();
 import express, { json } from "express";
 import cors from "cors";
 import { createConnection } from "mysql2"; 
@@ -8,10 +9,259 @@ import fs from "fs";
 import nodemailer from "nodemailer";
 import { Parser } from "@json2csv/plainjs";
 import PDFDocument from "pdfkit";
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// =============================
+// ENVIRONMENT VARIABLE VALIDATION
+// =============================
+
+console.log('Environment Variables Check:');
+console.log('PORT:', process.env.PORT);
+console.log('MYSQLHOST:', process.env.MYSQLHOST);
+console.log('MYSQLUSER:', process.env.MYSQLUSER);
+console.log('MYSQLDATABASE:', process.env.MYSQLDATABASE);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
+// =============================
+// DATABASE CONNECTION WITH FALLBACKS
+// =============================
+
+const dbConfig = {
+    host: process.env.MYSQLHOST || process.env.DB_HOST || "localhost",
+    user: process.env.MYSQLUSER || process.env.DB_USER || "root",   
+    password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || "",  
+    database: process.env.MYSQLDATABASE || process.env.DB_NAME || "bucohub",
+    port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
+    multipleStatements: true // Allow multiple SQL statements
+};
+
+console.log('Database Configuration:', {
+    host: dbConfig.host,
+    user: dbConfig.user,
+    database: dbConfig.database,
+    port: dbConfig.port
+});
+
+const db = createConnection(dbConfig);
+
+// =============================
+// DATABASE INITIALIZATION
+// =============================
+
+const initializeDatabase = () => {
+    const setupSQL = `
+        -- Create database if not exists
+        CREATE DATABASE IF NOT EXISTS \`bucohub\`;
+        USE \`bucohub\`;
+
+        -- Create admins table
+        CREATE TABLE IF NOT EXISTS admins (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            first_name VARCHAR(100) NOT NULL,
+            last_name VARCHAR(100) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            role ENUM('super_admin', 'admin', 'moderator') DEFAULT 'admin',
+            is_active BOOLEAN DEFAULT TRUE,
+            last_login TIMESTAMP NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+
+        -- Create registrations table (students)
+        CREATE TABLE IF NOT EXISTS registrations (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            firstName VARCHAR(100) NOT NULL,
+            lastName VARCHAR(100) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            phone VARCHAR(20),
+            password VARCHAR(255) NOT NULL,
+            age INT,
+            education VARCHAR(255),
+            experience TEXT,
+            courses JSON,
+            motivation TEXT,
+            profilePictureUrl VARCHAR(500),
+            is_active BOOLEAN DEFAULT TRUE,
+            email_verified BOOLEAN DEFAULT FALSE,
+            last_login TIMESTAMP NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_email (email),
+            INDEX idx_name (firstName, lastName),
+            INDEX idx_created_at (created_at)
+        );
+
+        -- Create password_resets table
+        CREATE TABLE IF NOT EXISTS password_resets (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            email VARCHAR(255) NOT NULL,
+            token VARCHAR(255) NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
+            used BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_email_token (email, token),
+            INDEX idx_expires (expires_at)
+        );
+
+        -- Create courses table (for better course management)
+        CREATE TABLE IF NOT EXISTS courses (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            description TEXT,
+            duration_weeks INT,
+            price DECIMAL(10,2),
+            is_active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+
+        -- Create student_courses junction table (for many-to-many relationship)
+        CREATE TABLE IF NOT EXISTS student_courses (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            student_id INT NOT NULL,
+            course_id INT NOT NULL,
+            enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            progress_percentage INT DEFAULT 0,
+            status ENUM('enrolled', 'in_progress', 'completed', 'dropped') DEFAULT 'enrolled',
+            completed_at TIMESTAMP NULL,
+            FOREIGN KEY (student_id) REFERENCES registrations(id) ON DELETE CASCADE,
+            FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+            UNIQUE KEY unique_student_course (student_id, course_id),
+            INDEX idx_student_status (student_id, status),
+            INDEX idx_course_status (course_id, status)
+        );
+
+        -- Create audit_log table for tracking admin actions
+        CREATE TABLE IF NOT EXISTS audit_log (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            admin_id INT,
+            action VARCHAR(100) NOT NULL,
+            table_name VARCHAR(100),
+            record_id INT,
+            old_values JSON,
+            new_values JSON,
+            ip_address VARCHAR(45),
+            user_agent TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_admin_date (admin_id, created_at),
+            INDEX idx_action (action)
+        );
+
+        -- Insert default admin user (password: admin123)
+        INSERT IGNORE INTO admins (first_name, last_name, email, password, role) VALUES 
+        ('System', 'Administrator', 'admin@bucohub.com', '$2a$10$8K1p/a0dRL1B0VZQY2Qz3uYQYQYQYQYQYQYQYQYQYQYQYQYQYQYQ', 'super_admin');
+
+        -- Insert sample courses
+        INSERT IGNORE INTO courses (name, description, duration_weeks, price) VALUES 
+        ('UI/UX Design', 'Learn user interface and user experience design principles', 12, 299.99),
+        ('Front-end Development', 'Master HTML, CSS, JavaScript and modern frameworks', 16, 399.99),
+        ('Back-end Development', 'Learn server-side programming with Node.js and databases', 20, 449.99),
+        ('Full Stack Development', 'Complete web development from front-end to back-end', 24, 599.99),
+        ('Data Science', 'Data analysis, machine learning and visualization', 20, 499.99),
+        ('Digital Marketing', 'SEO, social media marketing, and analytics', 12, 349.99),
+        ('Mobile App Development', 'Build iOS and Android applications', 18, 449.99),
+        ('Artificial Intelligence', 'Machine learning and AI fundamentals', 22, 549.99),
+        ('Cybersecurity', 'Network security and ethical hacking', 16, 499.99);
+
+        -- Create indexes for better performance
+        CREATE INDEX IF NOT EXISTS idx_registrations_phone ON registrations(phone);
+        CREATE INDEX IF NOT EXISTS idx_registrations_active ON registrations(is_active);
+        CREATE INDEX IF NOT EXISTS idx_admins_active ON admins(is_active);
+        CREATE INDEX IF NOT EXISTS idx_student_courses_progress ON student_courses(progress_percentage);
+        CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at DESC);
+    `;
+
+    db.query(setupSQL, (err, results) => {
+        if (err) {
+            console.error('❌ Database initialization failed:', err.message);
+        } else {
+            console.log('✅ Database initialized successfully with enhanced schema');
+            
+            // Create views and stored procedures
+            createDatabaseViewsAndProcedures();
+        }
+    });
+};
+
+const createDatabaseViewsAndProcedures = () => {
+    const viewsAndProceduresSQL = `
+        -- Create or replace view for student summary
+        CREATE OR REPLACE VIEW student_summary AS
+        SELECT 
+            r.id,
+            CONCAT(r.firstName, ' ', r.lastName) AS full_name,
+            r.email,
+            r.phone,
+            r.age,
+            r.education,
+            COUNT(sc.id) AS enrolled_courses,
+            AVG(sc.progress_percentage) AS avg_progress,
+            r.created_at
+        FROM registrations r
+        LEFT JOIN student_courses sc ON r.id = sc.student_id AND sc.status != 'dropped'
+        WHERE r.is_active = TRUE
+        GROUP BY r.id;
+
+        -- Create or replace view for course enrollment statistics
+        CREATE OR REPLACE VIEW course_enrollment_stats AS
+        SELECT 
+            c.id,
+            c.name,
+            c.duration_weeks,
+            COUNT(sc.id) AS total_enrollments,
+            AVG(sc.progress_percentage) AS avg_progress,
+            SUM(CASE WHEN sc.status = 'completed' THEN 1 ELSE 0 END) AS completed_count
+        FROM courses c
+        LEFT JOIN student_courses sc ON c.id = sc.course_id
+        WHERE c.is_active = TRUE
+        GROUP BY c.id;
+    `;
+
+    db.query(viewsAndProceduresSQL, (err) => {
+        if (err) {
+            console.error('❌ Views and procedures creation failed:', err.message);
+        } else {
+            console.log('✅ Database views and procedures created successfully');
+        }
+    });
+};
+
+// Database connection with initialization
+db.connect(err => {
+    if (err) {
+        console.error("❌ Database connection failed:", err.message);
+        console.error("Connection details:", {
+            host: dbConfig.host,
+            user: dbConfig.user,
+            database: dbConfig.database,
+            port: dbConfig.port
+        });
+        
+        // Don't exit in production, just log the error
+        if (process.env.NODE_ENV === 'production') {
+            console.log("🔄 Continuing without database connection...");
+        } else {
+            process.exit(1);
+        }
+    } else {
+        console.log("✅ Connected to MySQL database:", dbConfig.database);
+        
+        // Initialize database with enhanced schema
+        initializeDatabase();
+        
+        // Test database operations
+        db.query('SELECT 1 + 1 AS solution', (error, results) => {
+            if (error) {
+                console.error("❌ Database test query failed:", error.message);
+            } else {
+                console.log("✅ Database test query successful:", results[0].solution);
+            }
+        });
+    }
+});
 
 // =============================
 // ENHANCED FILE UPLOAD CONFIGURATION
@@ -21,7 +271,7 @@ const PORT = process.env.PORT || 3000;
 const uploadsDir = './uploads';
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
-    console.log('Uploads directory created:', uploadsDir);
+    console.log('📁 Uploads directory created:', uploadsDir);
 }
 
 // Enhanced Multer configuration with better file handling
@@ -83,24 +333,6 @@ app.use('/uploads', express.static(uploadsDir, {
     maxAge: '1d', // Cache for 1 day
     etag: true
 }));
-app.use(express.static('public')); // Serve static files from 'public' directory
-
-// Database connection
-const db = createConnection({
-    host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "root",   
-    password: process.env.DB_PASSWORD || "",  
-    database: process.env.DB_NAME || "bucohub",
-    port: process.env.DB_PORT || 3306
-});
-
-db.connect(err => {
-    if (err) {
-        console.error("Database connection failed:", err.message);
-        process.exit(1);
-    }
-    console.log("Connected to MySQL database (bucohub)");
-});
 
 // =============================
 // UTILITY FUNCTIONS
@@ -230,20 +462,84 @@ function parseCourses(coursesData) {
 }
 
 // =============================
-// ROUTES
+// ENHANCED ROUTES WITH NEW SCHEMA
 // =============================
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+    res.json({ 
+        status: "OK", 
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
+        database: db.state === 'authenticated' ? 'connected' : 'disconnected'
+    });
+});
 
 // Default route
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
     res.json({ 
         message: "BUCODel API is running",
+        environment: process.env.NODE_ENV || 'development',
+        port: PORT,
+        database_schema: "enhanced",
         endpoints: {
+            health: "/health",
             studentRegistration: "/api/register",
             adminLogin: "/api/admins/login",
             studentLogin: "/api/students/login",
+            courses: "/api/courses",
             fileUploads: "/uploads/"
         }
+    });
+});
+
+// NEW: Get all courses
+app.get("/api/courses", (req, res) => {
+    const sql = "SELECT * FROM courses WHERE is_active = TRUE ORDER BY name";
+    
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error('Courses fetch error:', err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        
+        res.json({
+            courses: result,
+            total: result.length
+        });
+    });
+});
+
+// NEW: Get course enrollment stats
+app.get("/api/courses/stats", authenticateAdmin, (req, res) => {
+    const sql = "SELECT * FROM course_enrollment_stats";
+    
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error('Course stats error:', err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        
+        res.json({
+            courseStats: result
+        });
+    });
+});
+
+// NEW: Get student summary
+app.get("/api/students/summary", authenticateAdmin, (req, res) => {
+    const sql = "SELECT * FROM student_summary ORDER BY created_at DESC";
+    
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error('Student summary error:', err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        
+        res.json({
+            students: result,
+            total: result.length
+        });
     });
 });
 
@@ -383,7 +679,7 @@ app.post("/api/register", upload.single('profilePicture'), async (req, res) => {
     }
 });
 
-// STUDENT LOGIN ENDPOINT - MOVED OUTSIDE REGISTRATION ROUTE
+// STUDENT LOGIN ENDPOINT - UPDATED WITH LAST_LOGIN
 app.post("/api/students/login", async (req, res) => {
     const { email, password } = req.body;
     
@@ -394,7 +690,7 @@ app.post("/api/students/login", async (req, res) => {
         });
     }
 
-    const sql = "SELECT * FROM registrations WHERE email = ?";
+    const sql = "SELECT * FROM registrations WHERE email = ? AND is_active = TRUE";
     
     db.query(sql, [email], async (err, result) => {
         if (err) {
@@ -422,6 +718,9 @@ app.post("/api/students/login", async (req, res) => {
                     error: "Invalid email or password" 
                 });
             }
+            
+            // Update last login
+            db.query("UPDATE registrations SET last_login = NOW() WHERE id = ?", [student.id]);
             
             // Return student data without password
             const { password: _, ...studentData } = student;
@@ -453,7 +752,7 @@ app.get("/api/students", authenticateAdmin, (req, res) => {
     
     let sql = `
         SELECT id, firstName, lastName, email, phone, age, education, experience, 
-            courses, motivation, profilePictureUrl, created_at, updated_at
+            courses, motivation, profilePictureUrl, is_active, last_login, created_at, updated_at
         FROM registrations 
         WHERE 1=1
     `;
@@ -471,7 +770,7 @@ app.get("/api/students", authenticateAdmin, (req, res) => {
     }
     
     // Add sorting
-    const allowedSortFields = ['id', 'firstName', 'lastName', 'email', 'age', 'created_at'];
+    const allowedSortFields = ['id', 'firstName', 'lastName', 'email', 'age', 'created_at', 'last_login'];
     const sortField = allowedSortFields.includes(sort) ? sort : 'id';
     const sortOrder = order.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
     
@@ -516,7 +815,7 @@ app.get("/api/students/:id", authenticateAdmin, (req, res) => {
     
     const sql = `
         SELECT id, firstName, lastName, email, phone, age, education, experience, 
-            courses, motivation, profilePictureUrl, created_at, updated_at
+            courses, motivation, profilePictureUrl, is_active, last_login, created_at, updated_at
         FROM registrations 
         WHERE id = ?
     `;
@@ -539,7 +838,7 @@ app.get("/api/students/:id", authenticateAdmin, (req, res) => {
 app.get("/api/students/export/csv", authenticateAdmin, (req, res) => {
     const sql = `
         SELECT id, firstName, lastName, email, phone, age, education, experience, 
-            courses, motivation, created_at
+            courses, motivation, is_active, last_login, created_at
         FROM registrations 
         ORDER BY created_at DESC
     `;
@@ -551,7 +850,7 @@ app.get("/api/students/export/csv", authenticateAdmin, (req, res) => {
         }
         
         // Simple CSV generation
-        const headers = ['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Age', 'Education', 'Experience', 'Courses', 'Motivation', 'Registration Date'];
+        const headers = ['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Age', 'Education', 'Experience', 'Courses', 'Motivation', 'Status', 'Last Login', 'Registration Date'];
         const csvData = result.map(student => [
             student.id,
             `"${student.firstName}"`,
@@ -563,6 +862,8 @@ app.get("/api/students/export/csv", authenticateAdmin, (req, res) => {
             `"${student.experience || ''}"`,
             `"${Array.isArray(student.courses) ? student.courses.join(', ') : student.courses}"`,
             `"${(student.motivation || '').replace(/"/g, '""')}"`,
+            student.is_active ? 'Active' : 'Inactive',
+            student.last_login ? new Date(student.last_login).toLocaleString() : 'Never',
             student.created_at ? new Date(student.created_at).toLocaleDateString() : ''
         ]);
         
@@ -580,7 +881,7 @@ app.get("/api/students/export/csv", authenticateAdmin, (req, res) => {
 app.get("/api/students/export/pdf", authenticateAdmin, (req, res) => {
     const sql = `
         SELECT id, firstName, lastName, email, phone, age, education, experience, 
-            courses, motivation, created_at
+            courses, motivation, is_active, last_login, created_at
         FROM registrations 
         ORDER BY created_at DESC
         LIMIT 100
@@ -609,14 +910,14 @@ app.get("/api/students/export/pdf", authenticateAdmin, (req, res) => {
             doc.moveDown();
             
             // Add table headers
-            const headers = ['ID', 'Name', 'Email', 'Phone', 'Courses'];
+            const headers = ['ID', 'Name', 'Email', 'Phone', 'Status', 'Courses'];
             let yPosition = doc.y;
             
             headers.forEach((header, i) => {
-                doc.text(header, 50 + (i * 100), yPosition, { width: 90, align: 'left' });
+                doc.text(header, 50 + (i * 80), yPosition, { width: 80, align: 'left' });
             });
             
-            doc.moveTo(50, yPosition + 15).lineTo(550, yPosition + 15).stroke();
+            doc.moveTo(50, yPosition + 15).lineTo(530, yPosition + 15).stroke();
             yPosition += 25;
             
             // Add student data
@@ -632,14 +933,15 @@ app.get("/api/students/export/pdf", authenticateAdmin, (req, res) => {
                 
                 const rowData = [
                     student.id.toString(),
-                    `${student.firstName} ${student.lastName}`.substring(0, 15),
-                    student.email.substring(0, 20),
+                    `${student.firstName} ${student.lastName}`.substring(0, 12),
+                    student.email.substring(0, 15),
                     student.phone || 'N/A',
-                    courses.substring(0, 25)
+                    student.is_active ? 'Active' : 'Inactive',
+                    courses.substring(0, 20)
                 ];
                 
                 rowData.forEach((data, i) => {
-                    doc.text(data, 50 + (i * 100), yPosition, { width: 90, align: 'left' });
+                    doc.text(data, 50 + (i * 80), yPosition, { width: 80, align: 'left' });
                 });
                 
                 yPosition += 20;
@@ -864,7 +1166,7 @@ app.post("/api/admins/register", async (req, res) => {
     }
 });
 
-// FIXED ADMIN LOGIN ENDPOINT
+// FIXED ADMIN LOGIN ENDPOINT WITH LAST_LOGIN UPDATE
 app.post("/api/admins/login", async (req, res) => {
     const { email, password } = req.body;
     
@@ -923,6 +1225,9 @@ app.post("/api/admins/login", async (req, res) => {
                 });
             }
             
+            // Update last login
+            db.query("UPDATE admins SET last_login = NOW() WHERE id = ?", [admin.id]);
+            
             console.log('Login successful for admin:', admin.email);
             
             // Return admin data without password
@@ -963,8 +1268,24 @@ app.use((error, req, res, next) => {
     res.status(500).json({ error: 'Internal server error' });
 });
 
+// Graceful shutdown
+process.on('SIGINT', () => {
+    console.log('🛑 Server shutting down...');
+    db.end();
+    process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+    console.log('🛑 Server shutting down...');
+    db.end();
+    process.exit(0);
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`📁 File uploads served from: /uploads/`);
     console.log(`💾 Upload directory: ${path.resolve(uploadsDir)}`);
+    console.log(`✅ Health check available at: /health`);
+    console.log(`📊 Enhanced database schema loaded`);
 });
