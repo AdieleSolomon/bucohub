@@ -1080,8 +1080,11 @@
     // =============================
     // CONFIGURATION & STATE
     // =============================
-    const API_URL = "http://localhost:3000/api";
-    const SERVER_URL = "http://localhost:3000";
+    //const API_URL = "http://localhost:3000/api";
+    //const SERVER_URL = "http://localhost:3000";
+    // NEW:
+    const API_URL = `${window.location.origin}/api`;
+    const SERVER_URL = window.location.origin;
     
     let currentState = {
         page: 1,
@@ -1315,7 +1318,7 @@
         
         if (fullUrl) {
             return `<img src="${fullUrl}" alt="Profile" class="profile-picture" 
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
         }
         
         return `<div class="no-image">No Image</div>`;
@@ -1349,7 +1352,7 @@
             <div style="text-align: center; margin-bottom: 25px;">
                 ${profilePictureUrl ? 
                     `<img src="${profilePictureUrl}" alt="Profile" class="profile-picture-large" 
-                          onerror="this.style.display='none'; document.getElementById('noImageFallback').style.display='flex';">` 
+                        onerror="this.style.display='none'; document.getElementById('noImageFallback').style.display='flex';">` 
                     : ''
                 }
                 <div id="noImageFallback" class="no-image-large" style="${profilePictureUrl ? 'display: none;' : ''}">
@@ -1666,7 +1669,7 @@
 
     function generateProgressData(courses) {
         const coursesArray = Array.isArray(courses) ? courses : 
-                           typeof courses === 'string' ? JSON.parse(courses) : [];
+                        typeof courses === 'string' ? JSON.parse(courses) : [];
         
         return coursesArray.map(course => ({
             name: course,

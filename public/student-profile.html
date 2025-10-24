@@ -1040,7 +1040,10 @@
         const threeLineBtn = document.getElementById('threeLineBtn');
         const sidePanel = document.getElementById('sidePanel');
         const sidePanelClose = document.getElementById('sidePanelClose');
-        const API_BASE_URL = 'http://localhost:3000';
+        const API_BASE_URL = window.location.origin;
+
+        //old API_BASE_URL
+        //const API_BASE_URL = 'http://localhost:3000';
         
         // Student data will be fetched from backend
         let studentData = null;
