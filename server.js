@@ -18,37 +18,45 @@ const PORT = process.env.PORT || 3000;
 // ENVIRONMENT VARIABLE VALIDATION
 // =============================
 
-console.log('Environment Variables Check:');
+console.log('🔍 Environment Variables Check:');
 console.log('PORT:', process.env.PORT);
 console.log('MYSQLHOST:', process.env.MYSQLHOST);
 console.log('MYSQLUSER:', process.env.MYSQLUSER);
 console.log('MYSQLDATABASE:', process.env.MYSQLDATABASE);
+console.log('MYSQLPORT:', process.env.MYSQLPORT);
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('RAILWAY_ENVIRONMENT:', process.env.RAILWAY_ENVIRONMENT);
 
 // =============================
-// DATABASE CONNECTION WITH RAILWAY SUPPORT
+// DATABASE CONNECTION WITH RAILWAY SUPPORT (FIXED)
 // =============================
 
+// Enhanced database configuration for Railway with timeout handling
 const dbConfig = {
-    host: process.env.MYSQLHOST || process.env.RAILWAY_MYSQLHOST || process.env.DB_HOST || "localhost",
-    user: process.env.MYSQLUSER || process.env.RAILWAY_MYSQLUSER || process.env.DB_USER || "root",   
-    password: process.env.MYSQLPASSWORD || process.env.RAILWAY_MYSQLPASSWORD || process.env.DB_PASSWORD || "",  
-    database: process.env.MYSQLDATABASE || process.env.RAILWAY_MYSQLDATABASE || process.env.DB_NAME || "bucohub",
-    port: process.env.MYSQLPORT || process.env.RAILWAY_MYSQLPORT || process.env.DB_PORT || 3306,
+    host: process.env.MYSQLHOST || 'mysql.railway.internal',
+    user: process.env.MYSQLUSER || 'root',   
+    password: process.env.MYSQLPASSWORD,  
+    database: process.env.MYSQLDATABASE || 'railway',
+    port: parseInt(process.env.MYSQLPORT) || 3306,
     multipleStatements: true,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    reconnect: true
+    reconnect: true,
+    connectTimeout: 60000, // 60 seconds timeout
+    acquireTimeout: 60000, // 60 seconds acquire timeout
+    timeout: 60000, // 60 seconds timeout
+    // Railway-specific connection options
+    socketPath: process.env.MYSQLHOST === 'mysql.railway.internal' ? null : undefined
 };
 
-console.log('Database Configuration:', {
+console.log('🔐 Database Configuration:', {
     host: dbConfig.host,
     user: dbConfig.user,
     database: dbConfig.database,
     port: dbConfig.port,
-    usingRailway: !!(process.env.MYSQLHOST || process.env.RAILWAY_MYSQLHOST)
+    hasPassword: !!dbConfig.password,
+    connectTimeout: dbConfig.connectTimeout
 });
 
 // Use connection pool instead of single connection
@@ -61,25 +69,9 @@ const db = mysql.createPool(dbConfig);
 const initializeRailwayDatabase = () => {
     console.log('🚄 Starting Railway database initialization...');
     
-    // For Railway, ensure database exists first
-    const tempDb = mysql.createConnection({
-        host: dbConfig.host,
-        user: dbConfig.user,
-        password: dbConfig.password,
-        port: dbConfig.port
-    });
-    
-    tempDb.query(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\``, (err) => {
-        if (err) {
-            console.log('⚠️ Database creation might have failed:', err.message);
-        } else {
-            console.log(`✅ Database ${dbConfig.database} ensured`);
-        }
-        tempDb.end();
-        
-        // Now proceed with table creation
-        initializeDatabaseTables();
-    });
+    // For Railway, we don't need to create database as it's already provided
+    // Just proceed with table creation
+    initializeDatabaseTables();
 };
 
 const initializeDatabase = () => {
@@ -208,8 +200,6 @@ const initializeDatabaseTables = () => {
     console.log('📊 Creating database tables...');
     
     const setupSQL = `
-        USE \`${dbConfig.database}\`;
-
         CREATE TABLE IF NOT EXISTS admins (
             id INT AUTO_INCREMENT PRIMARY KEY,
             first_name VARCHAR(100) NOT NULL,
@@ -327,11 +317,11 @@ const initializeDatabaseTables = () => {
 // FIXED: Create indexes with proper MySQL syntax
 const createAdditionalIndexes = () => {
     const indexes = [
-        `USE \`bucohub\`; CREATE INDEX idx_registrations_phone ON registrations(phone)`,
-        `USE \`bucohub\`; CREATE INDEX idx_registrations_active ON registrations(is_active)`,
-        `USE \`bucohub\`; CREATE INDEX idx_admins_active ON admins(is_active)`,
-        `USE \`bucohub\`; CREATE INDEX idx_student_courses_progress ON student_courses(progress_percentage)`,
-        `USE \`bucohub\`; CREATE INDEX idx_audit_log_created ON audit_log(created_at DESC)`
+        `CREATE INDEX idx_registrations_phone ON registrations(phone)`,
+        `CREATE INDEX idx_registrations_active ON registrations(is_active)`,
+        `CREATE INDEX idx_admins_active ON admins(is_active)`,
+        `CREATE INDEX idx_student_courses_progress ON student_courses(progress_percentage)`,
+        `CREATE INDEX idx_audit_log_created ON audit_log(created_at DESC)`
     ];
 
     let completed = 0;
@@ -363,11 +353,11 @@ const createAdditionalIndexes = () => {
 // FIXED: Railway version with proper MySQL syntax
 const createAdditionalIndexesForRailway = () => {
     const indexes = [
-        `USE \`${dbConfig.database}\`; CREATE INDEX idx_registrations_phone ON registrations(phone)`,
-        `USE \`${dbConfig.database}\`; CREATE INDEX idx_registrations_active ON registrations(is_active)`,
-        `USE \`${dbConfig.database}\`; CREATE INDEX idx_admins_active ON admins(is_active)`,
-        `USE \`${dbConfig.database}\`; CREATE INDEX idx_student_courses_progress ON student_courses(progress_percentage)`,
-        `USE \`${dbConfig.database}\`; CREATE INDEX idx_audit_log_created ON audit_log(created_at DESC)`
+        `CREATE INDEX idx_registrations_phone ON registrations(phone)`,
+        `CREATE INDEX idx_registrations_active ON registrations(is_active)`,
+        `CREATE INDEX idx_admins_active ON admins(is_active)`,
+        `CREATE INDEX idx_student_courses_progress ON student_courses(progress_percentage)`,
+        `CREATE INDEX idx_audit_log_created ON audit_log(created_at DESC)`
     ];
 
     let completed = 0;
@@ -397,8 +387,6 @@ const createAdditionalIndexesForRailway = () => {
 
 const createDatabaseViewsAndProcedures = () => {
     const viewsAndProceduresSQL = `
-        USE \`${dbConfig.database}\`;
-
         CREATE OR REPLACE VIEW student_summary AS
         SELECT 
             r.id,
@@ -439,31 +427,62 @@ const createDatabaseViewsAndProcedures = () => {
 };
 
 // =============================
-// DATABASE CONNECTION HANDLER
+// DATABASE CONNECTION HANDLER (IMPROVED)
 // =============================
 
-db.getConnection((err, connection) => {
-    if (err) {
-        console.error('❌ Database connection failed:', err.message);
-        if (process.env.NODE_ENV === 'production') {
-            console.log('🔄 Continuing without database connection...');
+let connectionAttempts = 0;
+const maxConnectionAttempts = 5;
+
+function initializeDatabaseConnection() {
+    connectionAttempts++;
+    
+    console.log(`🔄 Database connection attempt ${connectionAttempts}/${maxConnectionAttempts}...`);
+    
+    db.getConnection((err, connection) => {
+        if (err) {
+            console.error('❌ Database connection failed:', err.message);
+            console.log('🔍 Connection details:', {
+                host: dbConfig.host,
+                user: dbConfig.user,
+                database: dbConfig.database,
+                port: dbConfig.port,
+                hasPassword: !!dbConfig.password
+            });
+            
+            if (connectionAttempts < maxConnectionAttempts) {
+                const retryDelay = Math.pow(2, connectionAttempts) * 1000; // Exponential backoff
+                console.log(`🔄 Retrying connection in ${retryDelay/1000} seconds...`);
+                setTimeout(() => {
+                    initializeDatabaseConnection();
+                }, retryDelay);
+            } else {
+                console.error('💥 Maximum connection attempts reached. Starting server without database...');
+                startServerWithoutDB();
+            }
         } else {
-            process.exit(1);
+            console.log('✅ Connected to MySQL database:', dbConfig.database);
+            connection.release();
+            
+            // Initialize database based on environment
+            if (process.env.MYSQLHOST || process.env.RAILWAY_ENVIRONMENT) {
+                console.log('🚄 Railway environment detected - using Railway DB initialization');
+                initializeRailwayDatabase();
+            } else {
+                console.log('💻 Local environment - using standard initialization');
+                initializeDatabase();
+            }
         }
-    } else {
-        console.log('✅ Connected to MySQL database:', dbConfig.database);
-        connection.release();
-        
-        // Initialize database based on environment
-        if (process.env.MYSQLHOST || process.env.RAILWAY_ENVIRONMENT) {
-            console.log('🚄 Railway environment detected - using Railway DB initialization');
-            initializeRailwayDatabase();
-        } else {
-            console.log('💻 Local environment - using standard initialization');
-            initializeDatabase();
-        }
-    }
-});
+    });
+}
+
+function startServerWithoutDB() {
+    console.log('⚠️ Starting server in limited mode (no database)');
+    // Server will start but database operations will fail
+    // You can add basic routes that don't require database here
+}
+
+// Start the database connection
+initializeDatabaseConnection();
 
 // =============================
 // MIDDLEWARE AND FILE UPLOAD CONFIG
@@ -664,6 +683,24 @@ const comparePassword = async (password, hashedPassword) => {
 // API ROUTES - IMPLEMENTED
 // =============================
 
+// Add debug route to check environment variables
+app.get("/api/debug", (req, res) => {
+    res.json({
+        environment: process.env.NODE_ENV,
+        railwayEnvironment: process.env.RAILWAY_ENVIRONMENT,
+        databaseVariables: {
+            MYSQLHOST: process.env.MYSQLHOST,
+            MYSQLUSER: process.env.MYSQLUSER,
+            MYSQLDATABASE: process.env.MYSQLDATABASE,
+            MYSQLPORT: process.env.MYSQLPORT,
+            hasPassword: !!process.env.MYSQLPASSWORD
+        },
+        allEnvVars: Object.keys(process.env).filter(key => 
+            key.includes('MYSQL') || key.includes('RAILWAY') || key.includes('DATABASE')
+        )
+    });
+});
+
 app.get("/health", (req, res) => {
     db.getConnection((err, connection) => {
         const dbStatus = err ? 'disconnected' : 'connected';
@@ -674,7 +711,13 @@ app.get("/health", (req, res) => {
             timestamp: new Date().toISOString(),
             environment: process.env.NODE_ENV || 'development',
             database: dbStatus,
-            usingRailway: !!(process.env.MYSQLHOST || process.env.RAILWAY_ENVIRONMENT)
+            usingRailway: !!(process.env.MYSQLHOST || process.env.RAILWAY_ENVIRONMENT),
+            databaseConfig: {
+                host: dbConfig.host,
+                database: dbConfig.database,
+                port: dbConfig.port
+            },
+            connectionAttempts: connectionAttempts
         });
     });
 });
@@ -688,6 +731,7 @@ app.get("/", (req, res) => {
         usingRailway: !!(process.env.MYSQLHOST || process.env.RAILWAY_ENVIRONMENT),
         endpoints: {
             health: "/health",
+            debug: "/api/debug",
             studentRegistration: "/api/register",
             adminLogin: "/api/admins/login",
             studentLogin: "/api/students/login",
@@ -1288,4 +1332,5 @@ app.listen(PORT, () => {
     console.log(`📁 File uploads served from: /uploads/`);
     console.log(`💾 Upload directory: ${path.resolve(uploadsDir)}`);
     console.log(`✅ Health check available at: /health`);
+    console.log(`🐛 Debug endpoint available at: /api/debug`);
 });
