@@ -1226,12 +1226,12 @@ app.get("/api/students/export/pdf", authenticateAdmin, (req, res) => {
 
                 doc.fontSize(14).text(`${index + 1}. ${student.firstName} ${student.lastName}`, 100, yPosition);
                 doc.fontSize(10)
-                   .text(`Email: ${student.email}`, 120, yPosition + 20)
-                   .text(`Phone: ${student.phone || 'N/A'}`, 120, yPosition + 35)
-                   .text(`Age: ${student.age || 'N/A'}`, 120, yPosition + 50)
-                   .text(`Education: ${student.education || 'N/A'}`, 120, yPosition + 65)
-                   .text(`Courses: ${parseCourses(student.courses).join(', ') || 'None'}`, 120, yPosition + 80)
-                   .text(`Registered: ${new Date(student.created_at).toLocaleDateString()}`, 120, yPosition + 95);
+                    .text(`Email: ${student.email}`, 120, yPosition + 20)
+                    .text(`Phone: ${student.phone || 'N/A'}`, 120, yPosition + 35)
+                    .text(`Age: ${student.age || 'N/A'}`, 120, yPosition + 50)
+                    .text(`Education: ${student.education || 'N/A'}`, 120, yPosition + 65)
+                    .text(`Courses: ${parseCourses(student.courses).join(', ') || 'None'}`, 120, yPosition + 80)
+                    .text(`Registered: ${new Date(student.created_at).toLocaleDateString()}`, 120, yPosition + 95);
 
                 yPosition += 130;
             });
