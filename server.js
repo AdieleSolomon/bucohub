@@ -12,7 +12,8 @@ import { Parser } from '@json2csv/plainjs';
 import PDFDocument from 'pdfkit';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// FIX: Railway provides PORT environment variable, but if it's 3306 (MySQL), use 3000
+const PORT = (process.env.PORT && process.env.PORT !== '3306') ? process.env.PORT : 3000;
 
 // =============================
 // ENVIRONMENT VARIABLE VALIDATION
@@ -31,7 +32,7 @@ console.log('RAILWAY_ENVIRONMENT:', process.env.RAILWAY_ENVIRONMENT);
 // DATABASE CONNECTION WITH RAILWAY SUPPORT (FIXED)
 // =============================
 
-// Enhanced database configuration for Railway with timeout handling
+// Enhanced database configuration for Railway
 const dbConfig = {
     host: process.env.MYSQLHOST || 'mysql.railway.internal',
     user: process.env.MYSQLUSER || 'root',   
@@ -42,12 +43,11 @@ const dbConfig = {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    reconnect: true,
-    connectTimeout: 60000, // 60 seconds timeout
-    acquireTimeout: 60000, // 60 seconds acquire timeout
-    timeout: 60000, // 60 seconds timeout
-    // Railway-specific connection options
-    socketPath: process.env.MYSQLHOST === 'mysql.railway.internal' ? null : undefined
+    connectTimeout: 30000, // 30 seconds timeout
+    acquireTimeout: 30000, // 30 seconds acquire timeout
+    timeout: 30000, // 30 seconds timeout
+    // Remove invalid options that cause warnings
+    // reconnect: true, // This causes the warning
 };
 
 console.log('🔐 Database Configuration:', {
@@ -63,144 +63,72 @@ console.log('🔐 Database Configuration:', {
 const db = mysql.createPool(dbConfig);
 
 // =============================
-// DATABASE INITIALIZATION FUNCTIONS (FIXED)
+// DATABASE CONNECTION HANDLER (IMPROVED)
 // =============================
 
-const initializeRailwayDatabase = () => {
-    console.log('🚄 Starting Railway database initialization...');
+let connectionAttempts = 0;
+const maxConnectionAttempts = 3;
+
+function initializeDatabaseConnection() {
+    connectionAttempts++;
     
-    // For Railway, we don't need to create database as it's already provided
-    // Just proceed with table creation
-    initializeDatabaseTables();
-};
-
-const initializeDatabase = () => {
-    console.log('💻 Starting local database initialization...');
+    console.log(`🔄 Database connection attempt ${connectionAttempts}/${maxConnectionAttempts}...`);
     
-    const setupSQL = `
-        CREATE DATABASE IF NOT EXISTS \`bucohub\`;
-        USE \`bucohub\`;
-
-        CREATE TABLE IF NOT EXISTS admins (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            first_name VARCHAR(100) NOT NULL,
-            last_name VARCHAR(100) NOT NULL,
-            email VARCHAR(255) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
-            role ENUM('super_admin', 'admin', 'moderator') DEFAULT 'admin',
-            is_active BOOLEAN DEFAULT TRUE,
-            last_login TIMESTAMP NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        );
-
-        CREATE TABLE IF NOT EXISTS registrations (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            firstName VARCHAR(100) NOT NULL,
-            lastName VARCHAR(100) NOT NULL,
-            email VARCHAR(255) UNIQUE NOT NULL,
-            phone VARCHAR(20),
-            password VARCHAR(255) NOT NULL,
-            age INT,
-            education VARCHAR(255),
-            experience TEXT,
-            courses JSON,
-            motivation TEXT,
-            profilePictureUrl VARCHAR(500),
-            is_active BOOLEAN DEFAULT TRUE,
-            email_verified BOOLEAN DEFAULT FALSE,
-            last_login TIMESTAMP NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            INDEX idx_email (email),
-            INDEX idx_name (firstName, lastName),
-            INDEX idx_created_at (created_at)
-        );
-
-        CREATE TABLE IF NOT EXISTS password_resets (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            email VARCHAR(255) NOT NULL,
-            token VARCHAR(255) NOT NULL,
-            expires_at TIMESTAMP NOT NULL,
-            used BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            INDEX idx_email_token (email, token),
-            INDEX idx_expires (expires_at)
-        );
-
-        CREATE TABLE IF NOT EXISTS courses (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            description TEXT,
-            duration_weeks INT,
-            price DECIMAL(10,2),
-            is_active BOOLEAN DEFAULT TRUE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        );
-
-        CREATE TABLE IF NOT EXISTS student_courses (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            student_id INT NOT NULL,
-            course_id INT NOT NULL,
-            enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            progress_percentage INT DEFAULT 0,
-            status ENUM('enrolled', 'in_progress', 'completed', 'dropped') DEFAULT 'enrolled',
-            completed_at TIMESTAMP NULL,
-            FOREIGN KEY (student_id) REFERENCES registrations(id) ON DELETE CASCADE,
-            FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
-            UNIQUE KEY unique_student_course (student_id, course_id),
-            INDEX idx_student_status (student_id, status),
-            INDEX idx_course_status (course_id, status)
-        );
-
-        CREATE TABLE IF NOT EXISTS audit_log (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            admin_id INT,
-            action VARCHAR(100) NOT NULL,
-            table_name VARCHAR(100),
-            record_id INT,
-            old_values JSON,
-            new_values JSON,
-            ip_address VARCHAR(45),
-            user_agent TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            INDEX idx_admin_date (admin_id, created_at),
-            INDEX idx_action (action)
-        );
-
-        -- Insert default admin user with proper hashed password (password: admin123)
-        INSERT IGNORE INTO admins (first_name, last_name, email, password, role) VALUES 
-        ('System', 'Administrator', 'admin@bucohub.com', '$2a$10$8K1p/a0dRL1B0VZQY2Qz3uB8bZQ7q9K5jM3V2C1N4X6Y8H7G5F3D', 'super_admin');
-
-        -- Insert sample courses
-        INSERT IGNORE INTO courses (name, description, duration_weeks, price) VALUES 
-        ('UI/UX Design', 'Learn user interface and user experience design principles', 12, 299.99),
-        ('Front-end Development', 'Master HTML, CSS, JavaScript and modern frameworks', 16, 399.99),
-        ('Back-end Development', 'Learn server-side programming with Node.js and databases', 20, 449.99),
-        ('Full Stack Development', 'Complete web development from front-end to back-end', 24, 599.99),
-        ('Data Science', 'Data analysis, machine learning and visualization', 20, 499.99),
-        ('Digital Marketing', 'SEO, social media marketing, and analytics', 12, 349.99),
-        ('Mobile App Development', 'Build iOS and Android applications', 18, 449.99),
-        ('Artificial Intelligence', 'Machine learning and AI fundamentals', 22, 549.99),
-        ('Cybersecurity', 'Network security and ethical hacking', 16, 499.99);
-    `;
-
-    db.query(setupSQL, (err, results) => {
+    // Test if we have database credentials
+    if (!dbConfig.password) {
+        console.error('❌ No database password provided. Check Railway variables.');
+        startServerWithoutDB();
+        return;
+    }
+    
+    db.getConnection((err, connection) => {
         if (err) {
-            console.error('❌ Database initialization failed:', err.message);
+            console.error('❌ Database connection failed:', err.message);
+            console.log('🔍 Connection details:', {
+                host: dbConfig.host,
+                user: dbConfig.user,
+                database: dbConfig.database,
+                port: dbConfig.port,
+                hasPassword: !!dbConfig.password
+            });
+            
+            if (connectionAttempts < maxConnectionAttempts) {
+                const retryDelay = 5000; // 5 seconds
+                console.log(`🔄 Retrying connection in ${retryDelay/1000} seconds...`);
+                setTimeout(() => {
+                    initializeDatabaseConnection();
+                }, retryDelay);
+            } else {
+                console.error('💥 Maximum connection attempts reached. Starting server without database...');
+                console.log('💡 Check if database is properly connected in Railway dashboard');
+                startServerWithoutDB();
+            }
         } else {
-            console.log('✅ Database initialized successfully');
-            createAdditionalIndexes();
+            console.log('✅ Connected to MySQL database:', dbConfig.database);
+            connection.release();
+            
+            // Initialize database tables
+            initializeDatabaseTables();
         }
     });
-};
+}
+
+function startServerWithoutDB() {
+    console.log('⚠️ Starting server in limited mode (no database)');
+    console.log('📋 Available routes: /health, /, /api/debug');
+    // Server will start but database operations will fail
+}
+
+// =============================
+// DATABASE INITIALIZATION FUNCTIONS (FIXED)
+// =============================
 
 const initializeDatabaseTables = () => {
     console.log('📊 Creating database tables...');
     
-    const setupSQL = `
-        CREATE TABLE IF NOT EXISTS admins (
+    // Create tables one by one to avoid complex transaction issues
+    const tables = [
+        `CREATE TABLE IF NOT EXISTS admins (
             id INT AUTO_INCREMENT PRIMARY KEY,
             first_name VARCHAR(100) NOT NULL,
             last_name VARCHAR(100) NOT NULL,
@@ -211,9 +139,9 @@ const initializeDatabaseTables = () => {
             last_login TIMESTAMP NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        );
-
-        CREATE TABLE IF NOT EXISTS registrations (
+        )`,
+        
+        `CREATE TABLE IF NOT EXISTS registrations (
             id INT AUTO_INCREMENT PRIMARY KEY,
             firstName VARCHAR(100) NOT NULL,
             lastName VARCHAR(100) NOT NULL,
@@ -234,9 +162,9 @@ const initializeDatabaseTables = () => {
             INDEX idx_email (email),
             INDEX idx_name (firstName, lastName),
             INDEX idx_created_at (created_at)
-        );
-
-        CREATE TABLE IF NOT EXISTS password_resets (
+        )`,
+        
+        `CREATE TABLE IF NOT EXISTS password_resets (
             id INT AUTO_INCREMENT PRIMARY KEY,
             email VARCHAR(255) NOT NULL,
             token VARCHAR(255) NOT NULL,
@@ -245,9 +173,9 @@ const initializeDatabaseTables = () => {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_email_token (email, token),
             INDEX idx_expires (expires_at)
-        );
-
-        CREATE TABLE IF NOT EXISTS courses (
+        )`,
+        
+        `CREATE TABLE IF NOT EXISTS courses (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
             description TEXT,
@@ -256,9 +184,9 @@ const initializeDatabaseTables = () => {
             is_active BOOLEAN DEFAULT TRUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        );
-
-        CREATE TABLE IF NOT EXISTS student_courses (
+        )`,
+        
+        `CREATE TABLE IF NOT EXISTS student_courses (
             id INT AUTO_INCREMENT PRIMARY KEY,
             student_id INT NOT NULL,
             course_id INT NOT NULL,
@@ -271,9 +199,9 @@ const initializeDatabaseTables = () => {
             UNIQUE KEY unique_student_course (student_id, course_id),
             INDEX idx_student_status (student_id, status),
             INDEX idx_course_status (course_id, status)
-        );
-
-        CREATE TABLE IF NOT EXISTS audit_log (
+        )`,
+        
+        `CREATE TABLE IF NOT EXISTS audit_log (
             id INT AUTO_INCREMENT PRIMARY KEY,
             admin_id INT,
             action VARCHAR(100) NOT NULL,
@@ -286,78 +214,72 @@ const initializeDatabaseTables = () => {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_admin_date (admin_id, created_at),
             INDEX idx_action (action)
-        );
-
-        -- Insert default data with proper hashed password (password: admin123)
-        INSERT IGNORE INTO admins (first_name, last_name, email, password, role) VALUES 
-        ('System', 'Administrator', 'admin@bucohub.com', '$2a$10$8K1p/a0dRL1B0VZQY2Qz3uB8bZQ7q9K5jM3V2C1N4X6Y8H7G5F3D', 'super_admin');
-
-        INSERT IGNORE INTO courses (name, description, duration_weeks, price) VALUES 
-        ('UI/UX Design', 'Learn user interface and user experience design principles', 12, 299.99),
-        ('Front-end Development', 'Master HTML, CSS, JavaScript and modern frameworks', 16, 399.99),
-        ('Back-end Development', 'Learn server-side programming with Node.js and databases', 20, 449.99),
-        ('Full Stack Development', 'Complete web development from front-end to back-end', 24, 599.99),
-        ('Data Science', 'Data analysis, machine learning and visualization', 20, 499.99),
-        ('Digital Marketing', 'SEO, social media marketing, and analytics', 12, 349.99),
-        ('Mobile App Development', 'Build iOS and Android applications', 18, 449.99),
-        ('Artificial Intelligence', 'Machine learning and AI fundamentals', 22, 549.99),
-        ('Cybersecurity', 'Network security and ethical hacking', 16, 499.99);
-    `;
-
-    db.query(setupSQL, (err, results) => {
-        if (err) {
-            console.error('❌ Database table creation failed:', err.message);
-        } else {
-            console.log('✅ Database tables created successfully');
-            createAdditionalIndexesForRailway();
-        }
-    });
-};
-
-// FIXED: Create indexes with proper MySQL syntax
-const createAdditionalIndexes = () => {
-    const indexes = [
-        `CREATE INDEX idx_registrations_phone ON registrations(phone)`,
-        `CREATE INDEX idx_registrations_active ON registrations(is_active)`,
-        `CREATE INDEX idx_admins_active ON admins(is_active)`,
-        `CREATE INDEX idx_student_courses_progress ON student_courses(progress_percentage)`,
-        `CREATE INDEX idx_audit_log_created ON audit_log(created_at DESC)`
+        )`
     ];
 
-    let completed = 0;
-    const totalIndexes = indexes.length;
-
-    indexes.forEach((sql) => {
+    let tablesCreated = 0;
+    
+    tables.forEach((sql, index) => {
         db.query(sql, (err) => {
-            completed++;
-            
             if (err) {
-                // MySQL error 1061 = duplicate key name (index already exists)
-                if (err.errno === 1061) {
-                    console.log('✅ Index already exists (this is normal)');
-                } else {
-                    console.log('⚠️ Index creation error:', err.message);
-                }
+                console.error(`❌ Failed to create table ${index + 1}:`, err.message);
             } else {
-                console.log('✅ Index created successfully');
+                console.log(`✅ Table ${index + 1} created successfully`);
+                tablesCreated++;
             }
-
-            if (completed === totalIndexes) {
-                console.log('✅ All index operations completed');
-                createDatabaseViewsAndProcedures();
+            
+            if (tablesCreated === tables.length) {
+                console.log('✅ All tables processed');
+                insertDefaultData();
             }
         });
     });
 };
 
-// FIXED: Railway version with proper MySQL syntax
-const createAdditionalIndexesForRailway = () => {
+function insertDefaultData() {
+    console.log('📝 Inserting default data...');
+    
+    // Insert default admin
+    const adminSql = `INSERT IGNORE INTO admins (first_name, last_name, email, password, role) VALUES 
+        ('System', 'Administrator', 'admin@bucohub.com', '$2a$10$8K1p/a0dRL1B0VZQY2Qz3uB8bZQ7q9K5jM3V2C1N4X6Y8H7G5F3D', 'super_admin')`;
+    
+    db.query(adminSql, (err) => {
+        if (err) {
+            console.error('❌ Failed to insert admin:', err.message);
+        } else {
+            console.log('✅ Default admin inserted');
+        }
+    });
+    
+    // Insert sample courses
+    const coursesSql = `INSERT IGNORE INTO courses (name, description, duration_weeks, price) VALUES 
+        ('UI/UX Design', 'Learn user interface and user experience design principles', 12, 299.99),
+        ('Front-end Development', 'Master HTML, CSS, JavaScript and modern frameworks', 16, 399.99),
+        ('Back-end Development', 'Learn server-side programming with Node.js and databases', 20, 449.99),
+        ('Full Stack Development', 'Complete web development from front-end to back-end', 24, 599.99),
+        ('Data Science', 'Data analysis, machine learning and visualization', 20, 499.99),
+        ('Digital Marketing', 'SEO, social media marketing, and analytics', 12, 349.99),
+        ('Mobile App Development', 'Build iOS and Android applications', 18, 449.99),
+        ('Artificial Intelligence', 'Machine learning and AI fundamentals', 22, 549.99),
+        ('Cybersecurity', 'Network security and ethical hacking', 16, 499.99)`;
+    
+    db.query(coursesSql, (err) => {
+        if (err) {
+            console.error('❌ Failed to insert courses:', err.message);
+        } else {
+            console.log('✅ Sample courses inserted');
+        }
+    });
+}
+
+// FIXED: Create indexes with proper MySQL syntax
+const createAdditionalIndexes = () => {
     const indexes = [
-        `CREATE INDEX idx_registrations_phone ON registrations(phone)`,
-        `CREATE INDEX idx_registrations_active ON registrations(is_active)`,
-        `CREATE INDEX idx_admins_active ON admins(is_active)`,
-        `CREATE INDEX idx_student_courses_progress ON student_courses(progress_percentage)`,
-        `CREATE INDEX idx_audit_log_created ON audit_log(created_at DESC)`
+        `CREATE INDEX IF NOT EXISTS idx_registrations_phone ON registrations(phone)`,
+        `CREATE INDEX IF NOT EXISTS idx_registrations_active ON registrations(is_active)`,
+        `CREATE INDEX IF NOT EXISTS idx_admins_active ON admins(is_active)`,
+        `CREATE INDEX IF NOT EXISTS idx_student_courses_progress ON student_courses(progress_percentage)`,
+        `CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at DESC)`
     ];
 
     let completed = 0;
@@ -368,11 +290,7 @@ const createAdditionalIndexesForRailway = () => {
             completed++;
             
             if (err) {
-                if (err.errno === 1061) {
-                    console.log('✅ Index already exists (this is normal)');
-                } else {
-                    console.log('⚠️ Index creation error:', err.message);
-                }
+                console.log('⚠️ Index creation error:', err.message);
             } else {
                 console.log('✅ Index created successfully');
             }
@@ -425,64 +343,6 @@ const createDatabaseViewsAndProcedures = () => {
         }
     });
 };
-
-// =============================
-// DATABASE CONNECTION HANDLER (IMPROVED)
-// =============================
-
-let connectionAttempts = 0;
-const maxConnectionAttempts = 5;
-
-function initializeDatabaseConnection() {
-    connectionAttempts++;
-    
-    console.log(`🔄 Database connection attempt ${connectionAttempts}/${maxConnectionAttempts}...`);
-    
-    db.getConnection((err, connection) => {
-        if (err) {
-            console.error('❌ Database connection failed:', err.message);
-            console.log('🔍 Connection details:', {
-                host: dbConfig.host,
-                user: dbConfig.user,
-                database: dbConfig.database,
-                port: dbConfig.port,
-                hasPassword: !!dbConfig.password
-            });
-            
-            if (connectionAttempts < maxConnectionAttempts) {
-                const retryDelay = Math.pow(2, connectionAttempts) * 1000; // Exponential backoff
-                console.log(`🔄 Retrying connection in ${retryDelay/1000} seconds...`);
-                setTimeout(() => {
-                    initializeDatabaseConnection();
-                }, retryDelay);
-            } else {
-                console.error('💥 Maximum connection attempts reached. Starting server without database...');
-                startServerWithoutDB();
-            }
-        } else {
-            console.log('✅ Connected to MySQL database:', dbConfig.database);
-            connection.release();
-            
-            // Initialize database based on environment
-            if (process.env.MYSQLHOST || process.env.RAILWAY_ENVIRONMENT) {
-                console.log('🚄 Railway environment detected - using Railway DB initialization');
-                initializeRailwayDatabase();
-            } else {
-                console.log('💻 Local environment - using standard initialization');
-                initializeDatabase();
-            }
-        }
-    });
-}
-
-function startServerWithoutDB() {
-    console.log('⚠️ Starting server in limited mode (no database)');
-    // Server will start but database operations will fail
-    // You can add basic routes that don't require database here
-}
-
-// Start the database connection
-initializeDatabaseConnection();
 
 // =============================
 // MIDDLEWARE AND FILE UPLOAD CONFIG
@@ -1325,12 +1185,19 @@ process.on('SIGTERM', () => {
     process.exit(0);
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🚄 Railway Environment: ${process.env.RAILWAY_ENVIRONMENT || 'No'}`);
-    console.log(`📁 File uploads served from: /uploads/`);
-    console.log(`💾 Upload directory: ${path.resolve(uploadsDir)}`);
-    console.log(`✅ Health check available at: /health`);
-    console.log(`🐛 Debug endpoint available at: /api/debug`);
-});
+// Start the database connection first
+initializeDatabaseConnection();
+
+// Then start the server after a short delay to allow DB connection attempts
+setTimeout(() => {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+        console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`🚄 Railway Environment: ${process.env.RAILWAY_ENVIRONMENT || 'No'}`);
+        console.log(`📁 File uploads served from: /uploads/`);
+        console.log(`💾 Upload directory: ${path.resolve(uploadsDir)}`);
+        console.log(`✅ Health check available at: /health`);
+        console.log(`🐛 Debug endpoint available at: /api/debug`);
+        console.log(`🔗 Server URL: https://${process.env.RAILWAY_STATIC_URL || `localhost:${PORT}`}`);
+    });
+}, 1000); // 1 second delay
