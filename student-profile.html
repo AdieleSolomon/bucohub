@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - BUCODel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ============================= */
+        /*        BASE STYLES            */
+        /* ============================= */
+        :root {
+            --primary: #2d1b3d;
+            --secondary: #4a2c5a;
+            --accent: #ffd700;
+            --text: #ffffff;
+            --text-secondary: #b8a3c7;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* ============================= */
+        /*        HEADER STYLES          */
+        /* ============================= */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            color: var(--accent);
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .gear {
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--text);
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .gear::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: var(--text);
+            border-radius: 50%;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+        }
+        
+        .user-details {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-role {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+        
+        /* ============================= */
+        /*        DASHBOARD STYLES       */
+        /* ============================= */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-icon {
+            font-size: 30px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .card-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .card-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        /* ============================= */
+        /*        MAIN CONTENT           */
+        /* ============================= */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+        
+        .content-section {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background: #e6c200;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* ============================= */
+        /*        PROFILE STYLES         */
+        /* ============================= */
+        .profile-container {
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+        
+        .profile-image-container {
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent);
+            margin-bottom: 15px;
+        }
+        
+        .profile-details {
+            flex-grow: 1;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            border: 1px solid var(--border);
+        }
+        
+        /* ============================= */
+        /*        COURSES STYLES         */
+        /* ============================= */
+        .course-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .course-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .course-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .course-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .course-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--success);
+            color: white;
+        }
+        
+        .course-status.in-progress {
+            background: var(--warning);
+        }
+        
+        .course-status.not-started {
+            background: var(--text-secondary);
+        }
+        
+        .progress-container {
+            margin-top: 10px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        /* ============================= */
+        /*        ACTIVITY STYLES        */
+        /* ============================= */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+        
+        .activity-content {
+            flex-grow: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .activity-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* ============================= */
+        /*        PROGRESS CHART         */
+        /* ============================= */
+        .chart-container {
+            height: 250px;
+            margin-top: 20px;
+        }
+        
+        /* ============================= */
+        /*        LOGIN STYLES           */
+        /* ============================= */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-title {
+            font-size: 24px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            background: #e6c200;
+        }
+        
+        .login-btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+        }
+        
+        .login-message {
+            text-align: center;
+            margin-top: 15px;
+            min-height: 20px;
+            font-size: 14px;
+        }
+        
+        .error-message {
+            color: var(--danger);
+        }
+        
+        .success-message {
+            color: var(--success);
+        }
+        
+        /* ============================= */
+        /*        RESPONSIVE STYLES      */
+        /* ============================= */
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .section-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .user-details {
+                text-align: center;
+            }
+        }
+        
+        /* ============================= */
+        /*        LOADING STYLES         */
+        /* ============================= */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: var(--accent);
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid var(--accent);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    BUC<div class="gear"></div>Del
+                </div>
+                <h2 class="login-title">Student Portal</h2>
+                <p class="login-subtitle">Enter your credentials to access your account</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="btn-text">Login to Portal</span>
+                </button>
+                
+                <div class="login-message" id="loginMessage"></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Student Dashboard -->
+    <div id="dashboard" class="container hidden">
+        <header>
+            <div class="logo">
+                BUC<div class="gear"></div>Del
+                <span style="font-size: 18px; margin-left: 10px; color: var(--text-secondary);">Student Portal</span>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-name" id="userName">Student Name</div>
+                    <div class="user-role">Student</div>
+                </div>
+                <img src="" alt="Profile" class="user-avatar" id="userAvatar">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+        
+        <!-- Dashboard Stats -->
+        <div class="dashboard">
+            <div class="dashboard-card">
+                <div class="card-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="card-value" id="coursesCount">0</div>
+                <div class="card-label">Enrolled Courses</div>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="card-value" id="completedCourses">0</div>
+                <div class="card-label">Completed Courses</div>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="card-value" id="progressPercentage">0%</div>
+                <div class="card-label">Overall Progress</div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Profile Information -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Profile Information</h3>
+                        <div class="section-actions">
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-container">
+                        <div class="profile-image-container">
+                            <img src="" alt="Profile" class="profile-image" id="profileImage">
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-camera"></i> Change Photo
+                            </button>
+                        </div>
+                        
+                        <div class="profile-details">
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <div class="detail-label">Student ID</div>
+                                    <div class="detail-value" id="studentId">-</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Full Name</div>
+                                    <div class="detail-value" id="fullName">-</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Email Address</div>
+                                    <div class="detail-value" id="profileEmail">-</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Phone Number</div>
+                                    <div class="detail-value" id="profilePhone">-</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Age</div>
+                                    <div class="detail-value" id="profileAge">-</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Education Level</div>
+                                    <div class="detail-value" id="profileEducation">-</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Experience</div>
+                                    <div class="detail-value" id="profileExperience">-</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Registration Date</div>
+                                    <div class="detail-value" id="profileRegistration">-</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item" style="margin-top: 20px;">
+                                <div class="detail-label">Motivation</div>
+                                <div class="detail-value" id="profileMotivation" style="min-height: 80px;">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- My Courses -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">My Courses</h3>
+                        <div class="section-actions">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Enroll in New Course
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="course-list" id="courseList">
+                        <!-- Courses will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Progress Overview -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Progress Overview</h3>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Recent Activity</h3>
+                    </div>
+                    
+                    <div class="activity-list" id="activityList">
+                        <!-- Activities will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Upcoming Deadlines -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Upcoming Deadlines</h3>
+                    </div>
+                    
+                    <div class="activity-list" id="deadlineList">
+                        <!-- Deadlines will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =============================
+        // CONFIGURATION
+        // =============================
+        const API_BASE_URL = 'http://localhost:5500';
+        
+        // quick health check helper
+        async function ensureServerUp() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/health`, { method: 'GET' , cache: 'no-store' });
+                return res.ok;
+            } catch {
+                return false;
+            }
+        }
+        
+        // =============================
+        // STATE MANAGEMENT
+        // =============================
+        let currentStudent = null;
+        let progressChart = null;
+        
+        // =============================
+        // INITIALIZATION
+        // =============================
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLoginForm();
+            checkLoginStatus();
+        });
+        
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('studentLoggedIn') === 'true';
+            const studentData = localStorage.getItem('studentData');
+            
+            if (isLoggedIn && studentData) {
+                try {
+                    currentStudent = JSON.parse(studentData);
+                    showDashboard();
+                } catch (error) {
+                    console.error('Error parsing student data:', error);
+                    logout();
+                }
+            } else {
+                showLogin();
+            }
+        }
+        
+        // =============================
+        // LOGIN FUNCTIONALITY
+        // =============================
+        function initializeLoginForm() {
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+                const loginBtn = document.getElementById('loginBtn');
+                
+                // Enhanced input validation
+                if (!email) {
+                    showLoginMessage('Email address is required', 'error');
+                    return;
+                }
+                
+                if (!password) {
+                    showLoginMessage('Password is required', 'error');
+                    return;
+                }
+                
+                // Email format validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showLoginMessage('Please enter a valid email address', 'error');
+                    return;
+                }
+                
+                // Check server connection first
+                try {
+                    const serverUp = await ensureServerUp();
+                    if (!serverUp) {
+                        showLoginMessage('Cannot connect to server. Please check if the server is running.', 'error');
+                        return;
+                    }
+                    
+                    setLoginButtonState(loginBtn, true, 'Logging in...');
+                    showLoginMessage('', 'info');
+                    
+                    const response = await fetch(`${API_BASE_URL}/api/students/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: email.toLowerCase(),
+                            password: password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Login failed. Please check your credentials.');
+                    }
+                    
+                    if (data.success && data.student) {
+                        // Store student data securely
+                        const studentData = {
+                            id: data.student.id,
+                            firstName: data.student.firstName,
+                            lastName: data.student.lastName,
+                            email: data.student.email,
+                            courses: data.student.courses || []
+                        };
+                        
+                        localStorage.setItem('studentData', JSON.stringify(studentData));
+                        localStorage.setItem('studentLoggedIn', 'true');
+                        localStorage.setItem('studentToken', data.token);
+                        
+                        showLoginMessage('Login successful! Redirecting...', 'success');
+                        currentStudent = studentData;
+                        
+                        setTimeout(() => {
+                            showDashboard();
+                        }, 1500);
+                    } else {
+                        throw new Error('Invalid response from server');
+                    }
+                    
+                } catch (error) {
+                    handleLoginError(error);
+                } finally {
+                    setLoginButtonState(loginBtn, false, 'Login to Portal');
+                }
+            });
+        }
+        
+        function showLoginMessage(message, type) {
+            const messageEl = document.getElementById('loginMessage');
+            messageEl.textContent = message;
+            messageEl.className = 'login-message';
+            
+            if (type === 'error') {
+                messageEl.classList.add('error-message');
+            } else if (type === 'success') {
+                messageEl.classList.add('success-message');
+            }
+        }
+        
+        function setLoginButtonState(button, loading, text) {
+            const btnText = button.querySelector('.btn-text');
+            
+            if (loading) {
+                button.disabled = true;
+                btnText.textContent = text;
+                button.classList.add('loading');
+            } else {
+                button.disabled = false;
+                btnText.textContent = text;
+                button.classList.remove('loading');
+            }
+        }
+        
+        function validateLoginCredentials(email, password) {
+            if (!email || !password) return false;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function clearLoginForm() {
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginMessage').textContent = '';
+        }
+        
+        function handleLoginError(error) {
+            console.error('Login error:', error);
+            let message = 'Login failed. ';
+            
+            switch(error.status) {
+                case 401:
+                    message += 'Invalid credentials.';
+                    break;
+                case 404:
+                    message += 'Account not found.';
+                    break;
+                case 500:
+                    message += 'Server error. Please try again later.';
+                    break;
+                default:
+                    message += error.message || 'Please try again.';
+            }
+            
+            showLoginMessage(message, 'error');
+        }
+        
+        // =============================
+        // DASHBOARD FUNCTIONALITY
+        // =============================
+        function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            
+            if (currentStudent) {
+                populateStudentData();
+                initializeProgressChart();
+                generateSampleData();
+            }
+        }
+        
+        function showLogin() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+        
+        function logout() {
+            localStorage.removeItem('studentLoggedIn');
+            localStorage.removeItem('studentData');
+            localStorage.removeItem('studentToken');
+            localStorage.removeItem('studentId');
+            currentStudent = null;
+            
+            // Reset login form
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginMessage').textContent = '';
+            
+            showLogin();
+        }
+        
+        function populateStudentData() {
+            if (!currentStudent) return;
+            
+            // Basic info
+            document.getElementById('userName').textContent = `${currentStudent.firstName} ${currentStudent.lastName}`;
+            document.getElementById('fullName').textContent = `${currentStudent.firstName} ${currentStudent.lastName}`;
+            document.getElementById('studentId').textContent = currentStudent.id;
+            document.getElementById('profileEmail').textContent = currentStudent.email;
+            document.getElementById('profilePhone').textContent = currentStudent.phone || 'Not provided';
+            document.getElementById('profileAge').textContent = currentStudent.age || 'Not provided';
+            document.getElementById('profileEducation').textContent = currentStudent.education || 'Not provided';
+            document.getElementById('profileExperience').textContent = currentStudent.experience || 'Not provided';
+            document.getElementById('profileMotivation').textContent = currentStudent.motivation || 'Not provided';
+            
+            // Registration date
+            if (currentStudent.created_at) {
+                const regDate = new Date(currentStudent.created_at);
+                document.getElementById('profileRegistration').textContent = regDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } else {
+                document.getElementById('profileRegistration').textContent = 'Not available';
+            }
+            
+            // Profile picture
+            const profileImage = document.getElementById('profileImage');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (currentStudent.profilePictureUrl) {
+                const imageUrl = getProfilePictureURL(currentStudent.profilePictureUrl);
+                profileImage.src = imageUrl;
+                userAvatar.src = imageUrl;
+            } else {
+                profileImage.src = 'https://via.placeholder.com/150/2d1b3d/ffffff?text=No+Image';
+                userAvatar.src = 'https://via.placeholder.com/45/2d1b3d/ffffff?text=NA';
+            }
+        }
+        
+        function getProfilePictureURL(profilePictureUrl) {
+            if (!profilePictureUrl) return null;
+            
+            // If it's already a full URL, return as is
+            if (profilePictureUrl.startsWith('http')) {
+                return profilePictureUrl;
+            }
+            
+            // If it starts with /uploads, prepend server URL
+            if (profilePictureUrl.startsWith('/uploads/')) {
+                return `${API_BASE_URL}${profilePictureUrl}`;
+            }
+            
+            // If it's just a filename, construct the full URL
+            return `${API_BASE_URL}/uploads/${profilePictureUrl}`;
+        }
+        
+        // =============================
+        // COURSES AND PROGRESS
+        // =============================
+        function generateSampleData() {
+            // This would normally come from the backend
+            // For now, we'll generate sample data based on the student's courses
+            
+            const courses = currentStudent.courses ? 
+                (Array.isArray(currentStudent.courses) ? currentStudent.courses : JSON.parse(currentStudent.courses)) : 
+                ['UI/UX Design', 'Web Development', 'Data Science'];
+            
+            // Update dashboard stats
+            document.getElementById('coursesCount').textContent = courses.length;
+            document.getElementById('completedCourses').textContent = Math.floor(courses.length * 0.3); // Sample data
+            document.getElementById('progressPercentage').textContent = '45%'; // Sample data
+            
+            // Populate courses list
+            const courseList = document.getElementById('courseList');
+            courseList.innerHTML = '';
+            
+            courses.forEach((course, index) => {
+                const progress = Math.min(100, Math.floor(Math.random() * 100)); // Random progress for demo
+                const status = progress === 100 ? 'completed' : progress > 0 ? 'in-progress' : 'not-started';
+                const statusText = progress === 100 ? 'Completed' : progress > 0 ? 'In Progress' : 'Not Started';
+                
+                const courseItem = document.createElement('div');
+                courseItem.className = 'course-item';
+                courseItem.innerHTML = `
+                    <div class="course-header">
+                        <div class="course-title">${course}</div>
+                        <div class="course-status ${status}">${statusText}</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-info">
+                            <span>Progress</span>
+                            <span>${progress}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                `;
+                
+                courseList.appendChild(courseItem);
+            });
+            
+            // Populate recent activities
+            const activities = [
+                {
+                    icon: 'fa-book',
+                    title: 'Completed UI/UX Design Module',
+                    desc: 'You finished the User Research module',
+                    time: '2 hours ago'
+                },
+                {
+                    icon: 'fa-tasks',
+                    title: 'Submitted Web Development Assignment',
+                    desc: 'Assignment #3: JavaScript Fundamentals',
+                    time: '1 day ago'
+                },
+                {
+                    icon: 'fa-video',
+                    title: 'Watched Data Science Lecture',
+                    desc: 'Introduction to Machine Learning',
+                    time: '2 days ago'
+                },
+                {
+                    icon: 'fa-comment',
+                    title: 'Participated in Forum Discussion',
+                    desc: 'Posted in "Best Practices for UI Design"',
+                    time: '3 days ago'
+                }
+            ];
+            
+            const activityList = document.getElementById('activityList');
+            activityList.innerHTML = '';
+            
+            activities.forEach(activity => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'activity-item';
+                activityItem.innerHTML = `
+                    <div class="activity-icon">
+                        <i class="fas ${activity.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-desc">${activity.desc}</div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                `;
+                
+                activityList.appendChild(activityItem);
+            });
+            
+            // Populate upcoming deadlines
+            const deadlines = [
+                {
+                    icon: 'fa-flag',
+                    title: 'Web Development Project',
+                    desc: 'Final project submission',
+                    time: 'Due in 3 days'
+                },
+                {
+                    icon: 'fa-file-alt',
+                    title: 'Data Science Quiz',
+                    desc: 'Chapter 5: Data Visualization',
+                    time: 'Due in 5 days'
+                },
+                {
+                    icon: 'fa-code',
+                    title: 'UI/UX Design Assignment',
+                    desc: 'Prototype for mobile app',
+                    time: 'Due in 1 week'
+                }
+            ];
+            
+            const deadlineList = document.getElementById('deadlineList');
+            deadlineList.innerHTML = '';
+            
+            deadlines.forEach(deadline => {
+                const deadlineItem = document.createElement('div');
+                deadlineItem.className = 'activity-item';
+                deadlineItem.innerHTML = `
+                    <div class="activity-icon">
+                        <i class="fas ${deadline.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">${deadline.title}</div>
+                        <div class="activity-desc">${deadline.desc}</div>
+                        <div class="activity-time">${deadline.time}</div>
+                    </div>
+                `;
+                
+                deadlineList.appendChild(deadlineItem);
+            });
+        }
+        
+        function initializeProgressChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (progressChart) {
+                progressChart.destroy();
+            }
+            
+            // Sample data - in a real app, this would come from the backend
+            const courses = currentStudent.courses ? 
+                (Array.isArray(currentStudent.courses) ? currentStudent.courses : JSON.parse(currentStudent.courses)) : 
+                ['UI/UX Design', 'Web Development', 'Data Science', 'Mobile Dev', 'Digital Marketing'];
+            
+            const progressData = courses.map(() => Math.floor(Math.random() * 100));
+            
+            progressChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: courses,
+                    datasets: [{
+                        label: 'Progress (%)',
+                        data: progressData,
+                        backgroundColor: '#ffd700',
+                        borderColor: '#e6c200',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#b8a3c7'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#b8a3c7',
+                                maxRotation: 45
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#b8a3c7'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
